@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css %}
+<style>
+
+.custom-card-image {
+    height: 300px;
+    width: 100%;
+}
+  
+  body{
+    background-color: #f6f9fc !important;
+  }
+
+  .select2{
+    width: 100% !important;
+    min-height: 35px;
+  }
+  .select2-selection__choice{
+    background-color: #fff !important;
+    border: 1px solid #dbdbdb !important;
+    color: #7f7f7f !important;
+  }
+
+</style>
+{% endblock %}
+
+{% block bodyjs %}
+  <script>
+
+// shop-filters
+function productFilter(){
+
+  // console.log($('#filterCategory').val().toString())
+  // console.log($('#filterSubCategory').val().toString())
+  // console.log($('#filterInnerCategory').val().toString())
+
+  // console.log($('#filterSize').val().toString())
+  // console.log($('#filterColor').val().toString())
+  // console.log($('#filterBrand').val().toString())
+
+  // console.log($("#price_min").val())
+  // console.log($("#price_max").val())
+
+  var filter_url = "/vendor/{{vendor.id}}/filter/product/?filter=true&" + 
+                  "category=" + 
+                  $('#filterCategory').val().toString() + 
+                  "&" +
+                  "subcategory=" + 
+                  $('#filterSubCategory').val().toString() + 
+                  "&" + 
+                  "innercaegory=" +
+                  $('#filterInnerCategory').val().toString() + 
+                  "&" + 
+                  "size=" +
+                  $('#filterSize').val().toString() +
+                  "&" +
+                  "color=" +
+                  $('#filterColor').val().toString() +
+                  "&" +
+                  "brand=" +
+                  $('#filterBrand').val().toString() +
+                  "&" +
+                  "price_min=" +
+                  $('#price_min').val() +
+                  "&" +
+                  "price_max=" +
+                  $('#price_max').val()
+
+  console.log(filter_url)
+window.location.href = filter_url;
+
+}
+
+$(document).ready(function() {
+    $('#filterSize').select2({placeholder: 'Select Size'});
+    $('#filterColor').select2({placeholder: 'Select Color'});
+    $('#filterBrand').select2({placeholder: 'Select Brand'});
+
+    $('#filterCategory').select2({placeholder: 'Select Category'});
+    $('#filterSubCategory').select2({placeholder: 'Select Sub Category'});
+    $('#filterInnerCategory').select2({placeholder: 'Select Inner Category'});
+});
+
+
+var matchHeight = function () {
+  
+  function init() {
+    eventListeners();
+    matchHeight();
+  }
+  
+  function eventListeners(){
+    $(window).on('resize', function() {
+      matchHeight();
+    });
+  }
+  
+  function matchHeight(){
+    var groupName = $('.card-custom');
+    var groupHeights = [];
+    
+    groupName.css('min-height', 'auto');
+    
+    groupName.each(function() {
+      groupHeights.push($(this).outerHeight());
+    });
+    
+    var maxHeight = Math.max.apply(null, groupHeights);
+    groupName.css('min-height', maxHeight);
+  };
+  
+  return {
+    init: init
+  };
+  
+} ();
+
+$(document).ready(function() {
+  matchHeight.init();
+});
+
+
+  </script>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="page-title-overlap bg-dark pt-3 pb-5">
+      <div class="container pt-2 pb-2">
+        <div class="d-lg-flex justify-content-between pb-3">
+          <div class="order-lg-1 pr-lg-4 text-center text-lg-left">
+            <h1 class="h4 text-light mb-0"><p>Sellar: {{ vendor.company_name }}</p></h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container pb-5 mb-2 mb-md-4">
+      <div class="row">
+
+        <aside class="col-lg-3">
+          <!-- Sidebar-->
+          <div class="cz-sidebar rounded-lg box-shadow-lg mt-2" id="shop-sidebar">
+            <div class="cz-sidebar-header box-shadow-sm">
+              <button class="close ml-auto" type="button" data-dismiss="sidebar" aria-label="Close"><span class="d-inline-block font-size-xs font-weight-normal align-middle">Close sidebar</span><span class="d-inline-block align-middle ml-2" aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="cz-sidebar-body">
+
+              <div class="widget mb-4 pb-4 border-bottom">
+                <h3 class="widget-title">Categories</h3>
+                  <div class="widget">
+                      <select class="form-control" name="category" id="filterCategory" multiple="multiple">
+                        {% for category in categorys %}
+                        <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                      </select>
+                  </div>
+                  <div class="widget mt-3">
+                      <select class="form-control" name="sub_category" id="filterSubCategory" multiple="multiple">
+                        {% for subcategory in sub_categorys %}
+                        <option value="{{ subcategory }}">{{ subcategory }}</option>
+                        {% endfor %}
+                      </select>
+                  </div>
+                  <div class="widget mt-3">
+                      <select class="form-control" name="inner_category" id="filterInnerCategory" multiple="multiple">
+                        {% for inner_caegory in inner_categorys %}
+                        <option value="{{ inner_caegory }}">{{ inner_caegory }}</option>
+                        {% endfor %}
+                      </select>
+                  </div>
+              </div>
+
+              <div class="widget mb-4 pb-4 border-bottom">
+                <h3 class="widget-title">Size/Color/Brand</h3>
+                  <div class="widget">
+                      <select class="form-control" name="size" id="filterSize" multiple="multiple">
+                        {% for product_size in product_sizes %}
+                        <option value="{{ product_size }}">{{ product_size }}</option>
+                        {% endfor %}
+                      </select>
+                  </div>
+                  <div class="widget mt-3">
+                      <select class="form-control" name="color" id="filterColor" multiple="multiple">
+                        {% for product_color in product_colors %}
+                        <option value="{{ product_color }}">{{ product_color }}</option>
+                        {% endfor %}
+                      </select>
+                  </div>
+                  <div class="widget mt-3">
+                      <select class="form-control" name="brand" id="filterBrand" multiple="multiple">
+                        <option value="{{ vendor.company_name }}" selected="">{{ vendor.company_name }}</option>
+                      </select>
+                  </div>
+              </div>
+
+              <div class="widget mb-4 pb-4 border-bottom">
+                <h3 class="widget-title">Price</h3>
+                  <div class="widget">
+                    <div class="cz-range-slider" data-start-min="0" data-start-max="2000" data-min="0" data-max="2000" data-step="0">
+                      <div class="cz-range-slider-ui"></div>
+                      <div class="d-flex pb-1">
+                        <div class="w-50 pr-2 mr-2">
+                          <div class="input-group input-group-sm">
+                            <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                            <input class="form-control cz-range-slider-value-min" name="price_min" id="price_min" type="text">
+                          </div>
+                        </div>
+                        <div class="w-50 pl-2">
+                          <div class="input-group input-group-sm">
+                            <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                            <input class="form-control cz-range-slider-value-max" name="price_max" id="price_max" type="text">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+              <div class="card mb-grid-gutter">
+                <button type="button" class="btn btn-primary" onclick="productFilter()">Filter</button>
+              </div>
+          </div>
+        </aside>
+
+        <section class="col-lg-9">
+
+          <div class="d-flex justify-content-center justify-content-sm-between align-items-center pt-2 pb-4 pb-sm-5">
+            <div class="d-none d-sm-flex">
+              <!-- <p style="color: #fff;margin: 0px;">Search for: {{ search_q|default:"" }}</p> -->
+            </div>
+            <div class="d-none d-sm-flex">
+              <p style="color: #fff;margin: 0px;">{{total_product}} Products found</p>
+            </div>
+          </div>
+
+          <div class="row mx-n2 mt-4">
+            {% for product in products %}
+            <div class="col-md-3 col-sm-4 px-2 mb-4">
+              <div class="card product-card card-static card-custom">
+                  {% if product.is_discount_available %}
+                  <span class="badge badge-danger badge-shadow">Sale</span>
+                  {% endif %}
+                <a class="card-img-top d-block overflow-hidden" href="{% url 'product_details' product.slug %}">
+                  <img class="custom-card-image" src="{% if product.image_sm %}{{ product.image_sm.url }}{% else %}{{ product.image.url }}{% endif %}" alt="Product" style="padding: 0.6rem;">
+                </a>
+                <div class="card-body py-2">
+                  <a class="product-meta d-block font-size-xs pb-1" href="{% url 'product_category_details' product.category.slug %}">{{ product.category.name }}</a>
+                  <h3 class="product-title font-size-sm" style="margin-bottom: 0.3rem;"><a href="{% url 'product_details' product.slug %}">{{ product.name|truncatechars:50 }}</a></h3>
+                  {% if product.is_discount_available %}
+                  <div class="product-price" style="margin-bottom: 0.3rem;">
+                    <span class="text-accent">${{ product.sell_price }}</span>
+                    <del class="font-size-sm text-muted">${{ product.price }}</del>
+                  </div>
+                  {% else %}
+                  <div class="product-price" style="margin-bottom: 0.3rem;">
+                    <span class="text-accent">${{ product.price }}</span>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+    <hr class="my-3">
+    <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-end">
+
+    {% if products.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}"><i class="fa fa-chevron-left" aria-hidden="true"></i> Previous</a></li>
+    {% else %}
+        <li class="page-item disabled"><span><a class="page-link" href=""><i class="fa fa-chevron-left" aria-hidden="true"></i> Previous</a></span></li>
+    {% endif %}
+
+    {% if products.number|add:'-4' > 1 %}
+        <li class="page-item"><a class="page-link" href="?q={{ search_q }}&page={{ products.number|add:'-5' }}">&hellip;</a></li>
+    {% endif %}
+
+    {% for i in products.paginator.page_range %}
+        {% if products.number == i %}
+            <li class="page-item active"><span><a class="page-link" href="javascript:;">{{ i }}</a> <span class="sr-only">(current)</span></span></li>
+        {% elif i > products.number|add:'-5' and i < products.number|add:'5' %}
+            <li class="page-item"><a class="page-link" href="?q={{ search_q }}&page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.paginator.num_pages > products.number|add:'4' %}
+        <li class="page-item"><a class="page-link" href="?page={{ products.number|add:'5' }}">&hellip;</a></li>
+    {% endif %}
+
+    {% if products.has_next %}
+        <li class="page-item"><a class="page-link" href="?q={{ search_q }}&q={{ search_q }}&page={{ products.next_page_number }}">Next <i class="fa fa-chevron-right" aria-hidden="true"></i></a></li>
+    {% else %}
+        <li class="page-item disabled"><span><a class="page-link" href="">Next <i class="fa fa-chevron-right" aria-hidden="true"></i></a></span></li>
+    {% endif %}
+
+    </ul>
+    </nav>
+
+
+        </section>
+
+      </div>
+    </div>
+
+
+
+
+
+{% endblock %}

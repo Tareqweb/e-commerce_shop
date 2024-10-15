@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block css %}
+<style>
+	.paypal-button-number-1{
+		display: none;
+	}
+</style>
+{% endblock %}
+
+{% block bodyjs %}
+<script src="https://www.paypal.com/sdk/js?client-id={{ client_id }}&currency={{ currency }}" xmlns="http://www.w3.org/1999/html"></script>
+
+<script>
+    let paymentID = $('#id_order_id')[0];
+    let paymentForm = $('#dummy_payment_form')[0];
+    paypal.Buttons({
+        createOrder: function (data, actions) {
+            // This function sets up the details of the transaction, including the amount and line item details.
+            return actions.order.create({
+                intent: "CAPTURE",
+				payer: {
+				name: {
+				  given_name: "PayPal",
+				  surname: "Customer"
+				},
+				address: {
+				  address_line_1: '123 ABC Street',
+				  address_line_2: 'Apt 2',
+				  admin_area_2: 'San Jose',
+				  admin_area_1: 'CA',
+				  postal_code: '95121',
+				  country_code: 'US'
+				},
+				email_address: "customer@domain.com",
+				phone: {
+				  phone_type: "MOBILE",
+				  phone_number: {
+				    national_number: "14082508100"
+				  }
+				}
+				},
+                purchase_units: [{
+                    amount: {
+                        value: '0.10',
+                        currency_code: 'USD',
+                    },
+                    description: 'this is just test',
+                }],
+            });
+        },
+        onApprove: function (data, actions) {
+            // This function captures the funds from the transaction.
+            return actions.order.capture().then(function (details) {
+                // This function is called after successful payment.
+                // First, hide the paypay buttons
+                $('#paypal-button').addClass('hidden');
+                // then populate dummy form order_id                    
+                paymentID.value = data.orderID;
+                //and finally - submit the dummy form to the backend
+                paymentForm.submit();
+            });
+        }
+    }).render('#paypal-button');
+    //This function displays Smart Payment Buttons on your web page.
+</script>
+
+
+{% endblock %}
+ 
+{% block content %}
+
+    <div class="bg-dark pt-4">
+      <div class="container d-lg-flex justify-content-between py-2 py-lg-3">
+        <div class="order-lg-2 mb-3 mb-lg-0 pt-lg-2">
+        </div>
+        <div class="order-lg-1 pr-lg-4 text-center text-lg-left">
+          <h1 class="h3 text-light mb-0">Checkout</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="container pb-5 mb-2 mb-md-4">
+      <div class="row">
+        <section class="col-lg-9 mt-2">
+          <!-- Shipping address-->
+          <h2 class="h6 pt-1 pb-3 mb-3 border-bottom">Choose Payment method</h2>
+			<form method="post" id='dummy_payment_form' action="">{% csrf_token %}
+			{{ form }}
+			</form>
+		<div class="row">
+			<div class="col-lg-4 pt-4 pt-lg-0"></div>
+			<div class="col-lg-4 pt-4 pt-lg-0">
+				<div id="paypal-button" class="text-center"></div>
+			</div>
+		</div>
+			
+        </section>
+        <!-- Sidebar-->
+        <aside class="col-lg-3 pt-4 pt-lg-0">
+          <div class="cz-sidebar-static rounded-lg box-shadow-lg ml-lg-auto">
+            <div class="widget mb-3">
+              <h2 class="widget-title text-center">Order summary</h2>
+              {% for product in cart_obj.cartproduct_set.all %}
+              <div class="media align-items-center pb-2 border-bottom"><a class="d-block mr-2" href="shop-single-v1.html"><img width="64" src="{% if product.product.image_sm %}{{ product.product.image_sm.url }}{% else %}{{ product.product.image.url }}{% endif %}" alt="Product"/></a>
+                <div class="media-body">
+                  <h6 class="widget-product-title">{{ product.product.name }}</h6>
+                  <div class="widget-product-meta">
+                  {% if product.product.is_discount_available %}
+                    <span class="text-accent mr-2">${{ product.product.sell_price }}</span>
+                    <del class="font-size-sm text-muted">${{ product.product.price }}</del>
+                    {% else %}
+                      <span class="text-accent mr-2">${{ product.product.price }}</span>
+                  {% endif %}
+                    <span class="text-muted">x {{ product.quantity }}</span></div>
+                </div>
+              </div>
+              {% endfor %}
+            <ul class="list-unstyled font-size-sm pb-2 border-bottom">
+              <li class="d-flex justify-content-between align-items-center"><span class="mr-2">Subtotal:</span><span class="text-right">${{ cart_obj.cart_subtotal_amount|floatformat:2 }}</li>
+              <li class="d-flex justify-content-between align-items-center"><span class="mr-2">Shipping:</span><span class="text-right">${{ cart_obj.get_delivery_total }}</span></li>
+              <li class="d-flex justify-content-between align-items-center"><span class="mr-2">Taxes:</span><span class="text-right">${{ cart_obj.get_tax_total|floatformat:2 }}</span></li>
+              <li class="d-flex justify-content-between align-items-center"><span class="mr-2">Discount:</span><span class="text-right">
+                {% if cart_obj.is_valid_promo %}
+                ${{ cart_obj.get_promo_amount|floatformat:2 }}
+                {% else %}
+                -
+                {% endif %}
+              </span></li>
+            </ul>
+            <h3 class="font-weight-normal text-center my-4">
+                {% if cart_obj.is_valid_promo %}
+                ${{ cart_obj.get_cart_total_with_promo|floatformat:2 }}
+                {% else %}
+                ${{ cart_obj.get_cart_total|floatformat:2 }}
+                {% endif %}
+              
+            </h3>
+
+              {% if cart_obj.promo_code %}
+                <p style="font-size: 18px;font-weight: bold;">Promo Applied: {{ cart_obj.promo_code }}</p>
+                <a href="{% url 'remove_promo_code' %}">
+                <button class="btn btn-outline-primary btn-block" type="button">Remove promo code</button>
+                </a>
+              {% else %}
+              
+              <form method="POST" action="{% url 'apply_promo_code' %}" class="needs-validation" method="post" novalidate="">{% csrf_token %}
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Promo code" required="" name="promo">
+                <div class="invalid-feedback">Please provide promo code.</div>
+              </div>
+                <button class="btn btn-outline-primary btn-block" type="submit">Apply promo code</button>
+              </form>
+            {% endif %}
+
+          </div>
+        </aside>
+      </div>
+    </div>
+
+
+
+{% endblock %}

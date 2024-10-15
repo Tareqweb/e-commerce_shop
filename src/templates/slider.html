@@ -1,0 +1,20 @@
+    {% load static %}
+    <section>
+      <div class="cz-carousel">
+        <div class="cz-carousel-inner" data-carousel-options="{
+        &quot;items&quot;: 1, 
+        &quot;controls&quot;: true,
+        &quot;autoHeight&quot;: true,
+        &quot;nav&quot;: false,
+        &quot;loop&quot;: true,
+        &quot;speed&quot;: 300,
+        &quot;autoplay&quot;: true,
+        &quot;autoplayTimeout&quot;: 5000}">
+        {% for slide in sliders %}
+          <a href="{{ slide.button_link }}">
+            <img src="{{ slide.image.url }}" id="ressImageHeight" style="width: 100%;height: {{site_title.slider_image_height}}px">
+          </a>
+        {% endfor %}
+        </div>
+      </div>
+    </section>

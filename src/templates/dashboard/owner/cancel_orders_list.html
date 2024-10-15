@@ -1,0 +1,83 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block bodyjs %}
+<script>
+  function loadOption(self){
+    var url = $(self).attr("target_url")
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      success: function (data) {
+        $("#loadUpdateForm").html("");
+        $("#loadUpdateForm").html(data.html_form);
+        $("#admin-order-option-modal").modal()
+
+      }
+    });
+  }
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Orders</li>
+    </ol>
+
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-box mr-1"></i>
+        Order Cancellation Requests
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="dataTable" class="table table-bordered dt-responsive nowrap" style="width:100%; color: #7f7f7f !important;font-size: 14px;">
+                <thead>
+                    <tr class="dtable_header">
+                      <th scope="col">Order ID</th>
+                      <th scope="col">Payment ID</th>
+                      <th scope="col">Order By</th>
+                      <th scope="col">Order At</th>
+                      <th scope="col">Vendors</th>
+                      <th scope="col">Shipping Methos</th>
+                      <th scope="col">Cancellation Status</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for order_product in orders_list %}
+                  <tr>
+                    <td>{{order_product.vendor_order_product.vendor_order.main_order.id_no}}</td>
+                    <td>{{order_product.vendor_order_product.vendor_order.main_order.payment_id}}</td>
+                    <td>{{order_product.vendor_order_product.vendor_order.main_order.user.username}}</td>
+                    <td>{{order_product.vendor_order_product.vendor_order.main_order.created_at|date:"Y-m-d"}}</td>
+                    <td>{{order_product.vendor_order_product.vendor_order.vendor.company_name}}</td>
+                    <td>{{order_product.vendor_order_product.vendor_order.main_order.delivery_method}}</td>
+                    <td>
+                      {% if order_product.is_accepted %}
+                      Accepted
+                      {% endif %}
+                      {% if order_product.is_rejected %}
+                      Rejected
+                      {% endif %}
+                    </td>
+                    <td>
+                      <button class="btn btn-info btn-sm" target_url="{% url 'cancel_orders_details' order_product.id %}" onclick="loadOption(this)">View</button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+<div id="loadUpdateForm"></div>
+{% endblock %}

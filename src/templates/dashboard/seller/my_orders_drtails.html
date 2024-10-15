@@ -1,0 +1,63 @@
+
+  <div class="modal fade" id="order-option-modal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width: 60% !important;">
+      <div class="modal-content">
+        <div class="modal-header" style="padding: 10px !important;">
+          <h5 class="modal-title">Order ID - {{ order.main_order.id_no }}</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body pb-0">
+          <!-- Item-->
+          {% for product in order.vendororderproduct_set.all %}
+          <div class="d-sm-flex justify-content-between mb-4 pb-3 pb-sm-2 border-bottom">
+            <div class="media d-block d-sm-flex text-center text-sm-left" style="width: 75%;">
+              <a class="d-inline-block mx-auto mr-sm-4" target="_blank" href="{% url 'product_details' product.product.slug %}" style="width: 10rem;">
+              <img src="{{ product.product.image.url }}" alt="{{ product.product.slug }}" style="width: 90%;"></a>
+              <div class="media-body pt-2">
+                <p class="product-title font-size-base mb-2" style="margin-bottom: 0px !important;">
+                  <a target="_blank" href="{% url 'product_details' product.product.slug %}">{{ product.product.name }}</a></p>
+                  {% if product.size %}
+                    <div class="font-size-sm">
+                      <span class="text-muted mr-2">Size:</span>{{ product.size }}
+                    </div>
+                 {% endif %}
+                 {% if product.color %}
+                  <div class="font-size-sm">
+                    <span class="text-muted mr-2">Color:</span>{{ product.color }}
+                    </div>
+                  {% endif %}
+                <div class="font-size-lg text-accent pt-2">${{ product.product_price }}</div>
+              </div>
+            </div>
+            <div class="pt-2 pl-sm-3 mx-auto mx-sm-0 text-center">
+              <div class="text-muted mb-2">Quantity:</div>{{ product.quantity }}
+            </div>
+            <div class="pt-2 pl-sm-3 mx-auto mx-sm-0 text-center">
+              <div class="text-muted mb-2">Subtotal</div>{{ product.get_price }}
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+        <!-- Footer-->
+        <div class="modal-footer flex-wrap justify-content-between bg-info font-size-md" style="border-radius: 0px;background-color: #eee !important;">
+          <div class="px-2 py-1">
+          </div>
+          <div class="px-2 py-1">
+          </div>
+          <div class="px-2 py-1">
+             <span>Subtotal: </span><span><b>${{ order.order_subtotal_amount }}</b></span>
+          </div>
+        </div>
+
+        <div class="modal-footer flex-wrap bg-default font-size-md">
+          {% if not order.is_complete %}
+          <a href="{% url 'my_orders_is_complete' order.id %}">
+            <button type="button" class="btn btn-info">Mark as Done</button>
+          </a>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>

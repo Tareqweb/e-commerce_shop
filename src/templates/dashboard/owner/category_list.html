@@ -1,0 +1,111 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block content %}
+	<main class="col-md-9">
+		<article class="card mb-3">
+		<header class="card-header">
+			<strong class="d-inline-block mr-3" style="font-size: 23px;">Category List</strong>
+			<div style="float:right;">
+				<div class="input-group">
+					<a href="{% url 'create_my_product' %}" style="margin-right: 10px;">
+						<button type="button" class="btn btn-info">Add Category</button>
+					</a>
+				</div>
+			</div>
+		</header>
+		<div class="table-responsive">
+		<table class="table table-hover">
+		  <thead>
+		    <tr>
+		      <th scope="col">ID</th>
+		      <th scope="col">NAME</th>
+		    </tr>
+		  </thead>
+			<tbody>
+				{% for category in categorys %}
+				<tr>
+					<td>{{ category.id }}</td>
+					<td>{{ category.name }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		</div>
+
+		</article>
+
+
+
+		<article class="card mb-3">
+		<header class="card-header">
+			<strong class="d-inline-block mr-3" style="font-size: 23px;">Sub Category List</strong>
+			<div style="float:right;">
+				<div class="input-group">
+					<a href="{% url 'create_my_product' %}" style="margin-right: 10px;">
+						<button type="button" class="btn btn-info">Add Sub Category</button>
+					</a>
+				</div>
+			</div>
+		</header>
+		<div class="table-responsive">
+		<table class="table table-hover">
+		  <thead>
+		    <tr>
+		      <th scope="col">ID</th>
+		      <th scope="col">NAME</th>
+		    </tr>
+		  </thead>
+			<tbody>
+				{% for category in categorys %}
+				<tr>
+					<td>{{ category.id }}</td>
+					<td>{{ category.name }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		</div>
+
+		</article>
+
+
+
+		<article class="card mb-3">
+		<header class="card-header">
+			<strong class="d-inline-block mr-3" style="font-size: 23px;">Inner Category List</strong>
+			<div style="float:right;">
+				<div class="input-group">
+					<a href="{% url 'create_my_product' %}" style="margin-right: 10px;">
+						<button type="button" class="btn btn-info">Add Inner Cateegory</button>
+					</a>
+				</div>
+			</div>
+		</header>
+		<div class="table-responsive">
+		<table class="table table-hover">
+		  <thead>
+		    <tr>
+		      <th scope="col">ID</th>
+		      <th scope="col">NAME</th>
+		    </tr>
+		  </thead>
+			<tbody>
+				{% for category in categorys %}
+				<tr>
+					<td>{{ category.id }}</td>
+					<td>{{ category.name }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		</div>
+
+		</article>
+
+
+	</main>
+
+
+<br><br>
+{% endblock %}

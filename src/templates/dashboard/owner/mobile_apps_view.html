@@ -1,0 +1,42 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Apps</li>
+    </ol>
+
+	<div class="card mb-4">
+	    <div class="card-header">
+	        <i class="fas fa-box mr-1"></i>
+	        Apps
+	    </div>
+	    <div class="card-body">
+			<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Android App Url</label>
+					  	{% render_field form.android_app_url class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>IOS App Url</label>
+					  	{% render_field form.ios_app_url class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<button type="submit" style="float: right;" class="btn btn-info">Save</button>
+					</div> 
+				</div>
+			</form>
+	    </div>
+	</div>
+</div>
+
+
+<br><br>
+{% endblock %}

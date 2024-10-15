@@ -1,0 +1,147 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+
+{% block bodyjs %}
+<script>
+  function makePayment(self){
+    var url = $(self).attr("target_url")
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      success: function (data) {
+        $("#loadUpdateForm").html("");
+        $("#loadUpdateForm").html(data.html_form);
+        $("#admin-order-option-modal").modal()
+
+      }
+    });
+  }
+
+</script>
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="container-fluid">
+    <!-- <h1 class="mt-4">Dashboard</h1> -->
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Payment</li>
+    </ol>
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white mb-4" style="background-color: #343a40 !important">
+                <div class="card-body">
+                <p>Current Payable Amount</p>
+                <h2>${{ total_amount|floatformat:2 }}</h2>
+            	</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white mb-4" style="background-color: #343a40 !important">
+                <div class="card-body">
+                <p>Total Payable Order</p>
+                <h2>{{ vendor_payable_orders.count }}</h2>
+            	</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white mb-4" style="background-color: #343a40 !important">
+                <div class="card-body">
+                <p>Pending Payment Requests</p>
+                <h2>{{ pending_payment_rquests.count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card text-white mb-4" style="background-color: #343a40 !important">
+                <div class="card-body">
+                <p>Pending Payment Requests Amount</p>
+                <h2>${{ pending_total_amount|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table mr-1"></i>
+            Pending Payment Requests
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="dtable_header">
+                            <th>Vendor</th>
+                            <th>Payable Orders ID</th>
+                            <th>Payable Amount</th>
+                            <th>Requested At</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pending_payment in pending_payment_rquests %}
+                        <tr>
+                            <td>{{ pending_payment.user.vendor.company_name }}</td>
+                            <td>{{ pending_payment.orders_id }}</td>
+                            <td>${{ pending_payment.pay_amount|floatformat:2 }}</td>
+                            <td>{{ pending_payment.created_at|date:"Y-m-d" }}</td>
+                            <td>Pending</td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm" target_url="{% url 'load_vendor_payment_request' pending_payment.id %}" onclick="makePayment(this)">Pay</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table mr-1"></i>
+            Payable Orders
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="dtable_header">
+                            <th>ID</th>
+                            <th>Vendor</th>
+                            <th>Order By</th>
+                            <th>Payable Amount</th>
+                            <th>Order At</th>
+                            <th>Order Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	{% for order in vendor_payable_orders %}
+                        <tr>
+                            <td>{{ order.main_order.id_no }}</td>
+							<td>{{ order.vendor.company_name }}</td>
+							<td>{{ order.main_order.user }}</td>
+							<td>${{ order.order_subtotal_amount|floatformat:2 }}</td>
+							<td>{{ order.main_order.created_at|date:"Y-m-d" }}</td>
+							<td>{{ order.main_order.orderstatus.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="loadUpdateForm"></div>
+
+{% endblock %}

@@ -1,0 +1,136 @@
+{% load widget_tweaks %}
+
+  <div class="modal fade" id="admin-order-option-modal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width: 70% !important;">
+      <div class="modal-content">
+        <div class="modal-header" style="padding: 10px !important;">
+          <h5 class="modal-title">Order ID - {{ order.id_no }}</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body pb-0">
+
+      <aside class="col-sm-12" style="margin-top: 10px;">
+        <div class="card mb-3">
+          <article class="card-body">
+            <header class="mb-4">
+
+              <div class="row">
+                <div class="col">
+                  <p style="margin-bottom: 5px;"><b>Order Details</b></p>
+                  <span>Order ID: {{ order.id_no }}</span><br>
+                  <span>Payment ID: {{ order.payment_id }}</span>
+
+                  <p class="mt-2" style="margin-bottom: 5px;"><b>Order Status</b></p>
+                  <span>Status: {{ order.orderstatus.status }}</span><br>
+                  <span>Delivery Between: {{ order.orderstatus.expected_delivery_form|date:"m-d-Y" }} - {{ order.orderstatus.expected_delivery_to|date:"m-d-Y" }}</span>  
+                </div>
+                <div class="col">
+                  <p style="margin-bottom: 5px;"><b>Shipping Address</b></p>
+                  <span>{{ order.orderdeliveryinfo.address|linebreaksbr }}</span>
+                </div>
+              </div>
+
+            </header>
+          </article>
+          <article class="card-body border-top">
+            {% for vendor in order.vendororder_set.all %}
+              {% for product in vendor.vendororderproduct_set.all %}
+                <div class="media border p-3">
+                  <img src="{{ product.product.image_sm.url }}" alt="John Doe" class="mr-3 mt-3" style="width:60px;">
+                  <div class="media-body">
+                <div class="row">
+                  <div class="col">
+                      <small style="font-size: 15px;">{{ product.product.name }}</small><br>
+                      <small>{{ product.quantity }} x ${{ product.product_price }} = Total: ${{ product.get_price }}</small><br>
+                      <small style="font-weight: bold;">Vendor: {{ vendor.vendor.company_name }}</small>
+                      {% if product.cancelorder and product.cancelorder.is_accepted %}
+                      <br>
+                        <small style="color: red;font-weight: bold;">status: canceled</small>
+                      {% endif %}
+                      <p></p> 
+                  </div>
+                </div>
+                  </div>
+                </div>
+
+              {% endfor %}
+            {% endfor %}
+
+            <dl class="row" style="margin-top: 30px;">
+              <dt class="col-sm-10">Subtotal: <span class="float-right text-muted">{{ order.order_total_qty }} items</span></dt>
+              <dd class="col-sm-2 text-right"><strong>${{ order.order_subtotal_amount|floatformat:2 }}</strong></dd>
+              <dt class="col-sm-10">Delivery charge: <span class="float-right text-muted">{{ order.delivery_method }}</span></dt>
+              <dd class="col-sm-2 text-right"><strong>${{ order.get_delivery_total|floatformat:2 }}</strong></dd>
+
+              {% if order.is_valid_promo %}
+              <dt class="col-sm-10">Discount: <span class="float-right text-muted">{% if order.is_valid_promo %}{{ order.get_promo_percentage }}{% else %}-{% endif %}</span></dt>
+              <dd class="col-sm-2 text-right text-success"><strong>{% if order.is_valid_promo %}${{ order.get_promo_amount|floatformat:2 }}{% else %}-{% endif %}</strong></dd>
+              {% endif %}
+
+              <dt class="col-sm-10">Tax: <span class="float-right text-muted">-</span></dt>
+              <dd class="col-sm-2 text-right text-success"><strong>${{ order.get_tax_total|floatformat:2 }}</strong></dd>
+
+              {% if order.is_cancellation %}
+              <dt class="col-sm-10">Cancellation amount: <span class="float-right text-muted">-</span></dt>
+              <dd class="col-sm-2 text-right text-success"><strong>${{ order.get_total_cancellation_amount }}</strong></dd>
+              {% endif %}
+
+              {% if not order.is_cancellation %}
+              <dt class="col-sm-10">Total: <span class="float-right text-muted">-</span></dt>
+              <dd class="col-sm-2 text-right">
+                <strong class="h5 text-dark">${{ order.get_order_total|floatformat:2 }}</strong>
+              </dd>
+              {% else %}
+              <dt class="col-sm-10">Total: <span class="float-right text-muted">-</span></dt>
+              <dd class="col-sm-2 text-right">
+                <strong class="h5 text-dark">${{ order.get_total_cancellation_total|floatformat:2 }}</strong>
+              </dd>
+              {% endif %}
+
+            </dl>
+
+          </article>
+        </div>
+      </aside>
+
+
+      <aside class="col-sm-12" style="margin-top: 10px;">
+        <div class="card mb-3">
+          <article class="card-body">
+            <p>Update Order Status</p>
+            <form action="{% url 'orders_mark_as_shipment' order.id %}" method="POST">{% csrf_token %}
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Status</label>
+                    {% render_field form.status class="form-control" %}
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Tracking url<small>(Optional)</small></label>
+                    {% render_field form.tracking_url rows="1" class="form-control" %}
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Expected Delivery From</label>
+                    {% render_field form.expected_delivery_form rows="1" class="form-control" required="" %}
+                </div>
+                <div class="col form-group">
+                  <label>Expected Delivery To</label>
+                    {% render_field form.expected_delivery_to class="form-control" required="" %}
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <button class="btn btn-info" type="submit" style="float: right;">Change Status</button>
+                </div>
+              </div>
+            </form>
+          </article>
+        </div>
+      </aside>
+
+      </div>
+    </div>
+  </div>

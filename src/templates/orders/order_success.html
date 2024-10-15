@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="page-title-overlap bg-dark pt-4">
+      <div class="container d-lg-flex justify-content-between py-2 py-lg-3">
+        <div class="order-lg-2 mb-3 mb-lg-0 pt-lg-2">
+        </div>
+        <div class="order-lg-1 pr-lg-4 text-center text-lg-left">
+          <h1 class="h3 text-light mb-0">Checkout</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="container pb-5 mb-2 mb-md-4">
+      <div class="row">
+        <section class="col-lg-12">
+         <div class="steps steps-light pt-2 pb-3 mb-5">
+
+          	<a class="step-item active" href="javascript:;">
+              <div class="step-progress"><span class="step-count">1</span></div>
+              <div class="step-label"><i class="czi-cart"></i>Cart</div>
+          	</a>
+
+            <a class="step-item active" href="javascript:;">
+              <div class="step-progress"><span class="step-count">2</span></div>
+              <div class="step-label"><i class="czi-user-circle"></i>Your details</div>
+          	</a>
+
+            <a class="step-item active current" href="javascript:;">
+              <div class="step-progress"><span class="step-count">3</span></div>
+              <div class="step-label"><i class="czi-package"></i>Shipping</div>
+          	</a>
+
+            <a class="step-item active" href="javascript:;">
+              <div class="step-progress"><span class="step-count">4</span></div>
+              <div class="step-label"><i class="czi-card"></i>Payment</div>
+          	</a>
+
+            <a class="step-item active" href="javascript:;">
+              <div class="step-progress"><span class="step-count">5</span></div>
+              <div class="step-label"><i class="czi-check-circle"></i>Confirmation</div>
+          	</a>
+        </div>
+
+        <div class="pt-3">
+          <div class="card py-3 mt-sm-3">
+            <div class="card-body text-center">
+              <h2 class="h4 pb-3">Thank you for your order!</h2>
+              <p class="font-size-sm mb-2">Your order has been placed and will be processed as soon as possible.</p>
+              <p class="font-size-sm mb-2">Make sure you make note of your order number, which is <span class="font-weight-medium">{{ order.id_no|upper }}.</span></p>
+              <p class="font-size-sm">You will be receiving an email shortly with confirmation of your order.</p><a class="btn btn-secondary mt-3 mr-3" href="/">Go back shopping</a><a class="btn btn-primary mt-3" href="/myaccount/order-history/">Order History</a>
+            </div>
+          </div>
+        </div>
+
+
+
+        </section>
+      </div>
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block bodyjs %}
+<script>
+  function checkUncheckBillingAddress(self) {
+    if($(self).is(":checked")){
+      $("#billingAddress").hide()
+    }else if($(self).is(":not(:checked)")){
+      $("#billingAddress").show()
+    }
+  }
+</script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="bg-dark pt-4">
+      <div class="container d-lg-flex justify-content-between py-2 py-lg-3">
+        <div class="order-lg-2 mb-3 mb-lg-0 pt-lg-2">
+        </div>
+        <div class="order-lg-1 pr-lg-4 text-center text-lg-left">
+          <h1 class="h3 text-light mb-0">Checkout</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="container pb-5 mb-2 mb-md-4">
+      <div class="row">
+        <section class="col-lg-9 mt-2">
+
+          <!-- Shipping address-->
+      <h2 class="h6 border-bottom" style="background-color: #eaeaea;padding: 10px;">Shipping address</h2>
+
+			<form action="{% url 'create_shipping_details' %}" method="POST">{% csrf_token %}
+				<div class="form-row">
+					<div class="col form-group">
+						<label>First name</label>
+						{% render_field form.first_name class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Last name</label>
+					  	{% render_field form.last_name class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Email</label>
+					  	{% render_field form.email class="form-control" %}
+					</div> 
+					<div class="col form-group">
+						<label>Phone</label>
+					  	{% render_field form.phone class="form-control" %}
+					</div> 
+				</div>
+				<div class="form-group">
+					<label>Adress</label>
+					{% render_field form.address rows="2" class="form-control" %}
+			    </div>
+			 	<div class="form-row">
+					<div class="form-group col-md-6">
+					  <label>City</label>
+					  {% render_field form.city class="form-control" %}
+					</div> 
+					<div class="form-group col-md-6">
+					  <label>State</label>
+					  {% render_field form.state class="form-control custom-select" %}
+					</div> 
+				</div>
+				<div class="form-row">
+					<div class="form-group col-md-6">
+					  <label>Country</label>
+					  {% render_field form.country class="form-control" %}
+					</div> 
+					<div class="form-group col-md-6">
+					  <label>Zip</label>
+					  {% render_field form.zipcode class="form-control" %}
+					</div> 
+				</div>
+
+	          <div class="d-none d-lg-flex pt-4 mt-3">
+	            <div class="w-50 pr-3"><a class="btn btn-secondary btn-block" href="{% url 'cart' %}"><i class="czi-arrow-left mt-sm-0 mr-1"></i><span class="d-none d-sm-inline">Back</span><span class="d-inline d-sm-none">Back</span></a></div>
+
+	            <div class="w-50 pl-2">
+                <button class="btn btn-primary btn-block" type="submit">
+                    <span class="d-none d-sm-inline">Proceed to Shipping</span><span class="d-inline d-sm-none">Next</span><i class="czi-arrow-right mt-sm-0 ml-1"></i>
+                </button>
+              </div>
+	          </div>
+
+            <div class="row d-lg-none">
+              <div class="col-lg-8">
+                <div class="d-flex pt-4 mt-3">
+                  <div class="w-50 pr-3"><a class="btn btn-secondary btn-block" href="{% url 'cart' %}"><i class="czi-arrow-left mt-sm-0 mr-1"></i><span class="d-none d-sm-inline">Back</span><span class="d-inline d-sm-none">Back</span></a></div>
+                  <div class="w-50 pl-2">
+                    <button class="btn btn-primary btn-block" type="submit">
+                      <span class="d-none d-sm-inline">Proceed to Shipping</span><span class="d-inline d-sm-none">Next</span><i class="czi-arrow-right mt-sm-0 ml-1"></i>
+                    </button>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+			</form>
+        </section>
+        <!-- Sidebar-->
+        <aside class="col-lg-3 pt-4 pt-lg-0">
+          <div class="cz-sidebar-static rounded-lg box-shadow-lg ml-lg-auto">
+            <div class="widget mb-3">
+              <h2 class="widget-title text-center">Order summary</h2>
+              {% for product in cart_obj.cartproduct_set.all %}
+              <div class="media align-items-center pb-2 border-bottom"><a class="d-block mr-2" href="shop-single-v1.html"><img width="64" src="{% if product.product.image_sm %}{{ product.product.image_sm.url }}{% else %}{{ product.product.image.url }}{% endif %}" alt="Product"/></a>
+                <div class="media-body">
+                  <h6 class="widget-product-title">{{ product.product.name }}</h6>
+                  <div class="widget-product-meta">
+                  {% if product.product.is_discount_available %}
+                    <span class="text-accent mr-2">${{ product.product.sell_price }}</span>
+                    <del class="font-size-sm text-muted">${{ product.product.price }}</del>
+                    {% else %}
+                      <span class="text-accent mr-2">${{ product.product.price }}</span>
+                  {% endif %}
+
+                  <span class="text-muted">x {{ product.quantity }}</span></div>
+                </div>
+              </div>
+              {% endfor %}
+            <ul class="list-unstyled font-size-sm pb-2 border-bottom">
+              <li class="d-flex justify-content-between align-items-center"><span class="mr-2">Subtotal:</span><span class="text-right">${{ cart_obj.cart_subtotal_amount|floatformat:2 }}</li>
+              <li class="d-flex justify-content-between align-items-center"><span class="mr-2">Shipping:</span><span class="text-right">—</span></li>
+              <li class="d-flex justify-content-between align-items-center"><span class="mr-2">Taxes:</span><span class="text-right">${{ cart_obj.get_tax_total|floatformat:2 }}</span></li>
+              <li class="d-flex justify-content-between align-items-center"><span class="mr-2">Discount:</span><span class="text-right">
+                {% if cart_obj.is_valid_promo %}
+                ${{ cart_obj.get_promo_amount|floatformat:2 }}
+                {% else %}
+                -
+                {% endif %}
+              </span></li>
+            </ul>
+            <h3 class="font-weight-normal text-center my-4">
+                {% if cart_obj.is_valid_promo %}
+                ${{ cart_obj.get_cart_total_with_promo|floatformat:2 }}
+                {% else %}
+                ${{ cart_obj.get_cart_total|floatformat:2 }}
+                {% endif %}
+              
+            </h3>
+
+              {% if cart_obj.promo_code %}
+                <p style="font-size: 18px;font-weight: bold;">Promo Applied: {{ cart_obj.promo_code }}</p>
+                <a href="{% url 'remove_promo_code' %}">
+                <button class="btn btn-outline-primary btn-block" type="button">Remove promo code</button>
+                </a>
+              {% else %}
+              
+              <form method="POST" action="{% url 'apply_promo_code' %}" class="needs-validation" method="post" novalidate="">{% csrf_token %}
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Promo code" required="" name="promo">
+                <div class="invalid-feedback">Please provide promo code.</div>
+              </div>
+              <button class="btn btn-outline-primary btn-block" type="submit">Apply promo code</button>
+              </form>
+            {% endif %}
+
+          </div>
+        </aside>
+      </div>
+      <!-- Navigation (mobile)-->
+    </div>
+
+{% endblock %}

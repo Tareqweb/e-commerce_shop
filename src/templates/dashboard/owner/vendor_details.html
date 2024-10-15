@@ -1,0 +1,70 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<div class="modal fade" id="vendor-details-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Vendor Details</span>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body tab-content py-4">
+        <p style="margin: 0px;">Company Name: {{ vendor.company_name }}</p>
+        <p style="margin: 0px;">Full Name: {{ vendor.full_name }}</p>
+        <p style="margin: 0px;">Email: {{ vendor.email }}</p>
+        <p style="margin: 0px;">Phone: {{ vendor.phone }}</p>
+        <p style="margin: 0px;">Mobile: {{ vendor.mobile }}</p>
+        <p style="margin: 0px;">Country: {{ vendor.country }}</p>
+        <p style="margin: 0px;">State: {{ vendor.state }}</p>
+        <p style="margin: 0px;">City: {{ vendor.city }}</p>
+        <p style="margin: 0px;">Zip: {{ vendor.zipcode }}</p>
+        <p style="margin: 0px;">Address: {{ vendor.address }}</p>
+        <hr>
+        <p>Additional Documents</p>
+        <hr>
+        <div class="document">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Document</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for doc in vendor_docs %}
+              <tr>
+                <td>{{doc.title}}</td>
+                <td><a href="{{doc.document.url}}" download="">Download</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+        </div>
+        <hr>
+
+        <form method="POST" action="{% url 'vendor_document_save' vendor.id %}" enctype="multipart/form-data">{% csrf_token %}  
+            <div class="form-row">
+              <div class="col form-group">
+                <label>Title</label>
+                  {% render_field form.title class="form-control" %}
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col form-group">
+                <label>Document</label>
+                  {% render_field form.document class="form-control" %}
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col form-group">
+                <button type="submit" class="btn btn-info" style="float:right;">Save</button>
+              </div>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

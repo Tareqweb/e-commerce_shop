@@ -1,0 +1,216 @@
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav" style="margin-bottom: 50px;">
+                           
+                            {% if vendor_menu and not admin_menu %}
+                            <a class="nav-link" href="/dashboard/vendor/" style="margin-top: 1rem;">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Products</div>
+                            <a class="nav-link" href="{% url 'my_active_products' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Active Products
+                            </a>
+                            <a class="nav-link" href="{% url 'my_unapproved_products' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Unapproved Products
+                            </a>
+                            <a class="nav-link" href="{% url 'my_inactive_products' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Inactive Products
+                            </a>
+                            <a class="nav-link" href="{% url 'create_my_product' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box-open"></i></div>
+                                Create Product
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">Orders</div>
+                            <a class="nav-link" href="{% url 'my_orders' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                All Orders
+                            </a>
+                            <a class="nav-link" href="{% url 'my_pending_orders' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Pending Order
+                            </a>
+                            <a class="nav-link" href="{% url 'my_cancel_orders' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Cancel Order
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Payemnts</div>
+                            <a class="nav-link" href="{% url 'deu_payment' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Due Payment
+                            </a>
+                            <a class="nav-link" href="{% url 'payment_history' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Payment History
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Settings</div>
+                            <a class="nav-link" href="{% url 'update_vendor_profile' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Profile
+                            </a>
+                            <a class="nav-link" href="{% url 'vendor_change_password_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Change Password
+                            </a>
+                            {% endif %}
+
+
+                            {% if not vendor_menu and admin_menu %}
+                            <a class="nav-link" href="/dashboard/admin/" style="margin-top: 1rem;">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Products</div>
+
+
+
+
+
+                            <a class="nav-link" href="{% url 'product_list' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Active Products
+                            </a>
+                            <a class="nav-link" href="{% url 'product_request' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box-open"></i></div>
+                                Product Requests
+                            </a>
+                            <a class="nav-link" href="{% url 'declined_product_request' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box-open"></i></div>
+                                Rejected Products
+                            </a>
+                            <a class="nav-link" href="{% url 'hidden_product_list' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box-open"></i></div>
+                                All Hidden Products
+                            </a>
+
+
+                            <div class="sb-sidenav-menu-heading">Categorys</div>
+                            <a class="nav-link" href="{% url 'product_categorys' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Categorys
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">Size & Color</div>
+                            <a class="nav-link" href="{% url 'product_colors_and_sizes' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Size & Color
+                            </a>
+
+
+
+                            <div class="sb-sidenav-menu-heading">Vendors & Customers</div>
+                            <a class="nav-link" href="{% url 'vendor_list' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Active Vendors
+                            </a>
+                            <a class="nav-link" href="{% url 'deactivate_vendor_list' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Deactivate Vendors
+                            </a>
+                            <a class="nav-link" href="{% url 'user_list' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Customers
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Orders</div>
+                            <a class="nav-link" href="{% url 'orders_list' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                All Orders
+                            </a>
+                            <a class="nav-link" href="{% url 'pending_orders_list' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Pending Order
+                            </a>
+                            <a class="nav-link" href="{% url 'cancel_orders_list' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Cancel Order
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">Coupon code</div>
+                            <a class="nav-link" href="{% url 'coupons' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Coupons
+                            </a>
+
+
+                            <div class="sb-sidenav-menu-heading">Payemnts</div>
+                            <a class="nav-link" href="{% url 'vendor_deu_payment' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Due Payment
+                            </a>
+                            <a class="nav-link" href="{% url 'vendor_payment_history' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Payment History
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">Site Settings</div>
+                            <a class="nav-link" href="{% url 'dashboard_properties' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Properties
+                            </a>
+                            <a class="nav-link" href="{% url 'dashboard_slider' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Sliders
+                            </a>
+                            <a class="nav-link" href="{% url 'dashboard_shipping_method' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Shipping Method
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">Account Settings</div>
+                            <a class="nav-link" href="{% url 'mobile_apps_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Apps
+                            </a>
+                            <a class="nav-link" href="{% url 'admin_change_password_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Change Password
+                            </a>
+
+
+                            <div class="sb-sidenav-menu-heading">Pages</div>
+                            <a class="nav-link" href="{% url 'about_us_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                About us
+                            </a>
+                            <a class="nav-link" href="{% url 'conract_us_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Conract us
+                            </a>
+                            <a class="nav-link" href="{% url 'faq_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                FAQ
+                            </a>
+                            <a class="nav-link" href="{% url 'privacy_policy_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Privacy Policy
+                            </a>
+                            <a class="nav-link" href="{% url 'terms_of_use_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Terms of Use
+                            </a>
+                            <a class="nav-link" href="{% url 'refund_return_policy_view' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Refund & Return Policy
+                            </a>
+                            {% endif %}
+
+
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer" style="background-color: #337880;color: #fff;font-weight: bold;text-align: center;margin: 0px;">
+                        <p style="margin: 0px;">
+                            {% if vendor_menu and not admin_menu %}
+                                VENDOR DASHBOARD
+                            {% endif %}
+                            {% if not vendor_menu and admin_menu %}
+                                ADMIN DASHBOARD
+                            {% endif %}
+                        </p>
+                    </div>
+                </nav>
+            </div>

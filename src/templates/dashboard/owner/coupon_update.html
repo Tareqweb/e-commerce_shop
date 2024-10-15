@@ -1,0 +1,73 @@
+{% load widget_tweaks %}
+
+{% block bodyjs %}
+<script>
+  $(document).ready(function() {
+    $('#id_cupon_for_update').select2();
+  });
+
+</script>
+{% endblock %}
+
+<div class="modal" id="myModalUpdate">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Update Coupon</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'coupons_update' coupon.id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+  
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Coupon Code</label>
+                {% render_field form.coupon_code class="form-control" %}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Coupon Amount</label>
+                {% render_field form.coupon_amount class="form-control" %}
+            </div>
+            <div class="col form-group">
+              <label>Coupon Amount In</label>
+                {% render_field form.coupon_amount_in  class="form-control" %}
+            </div>
+          </div>
+
+<!--           <div class="form-row">
+            <div class="col form-group">
+              <label>Applicable Categorys</label>
+                {% render_field form.cupon_for id="id_cupon_for_update" class="form-control" %}
+            </div>
+            <div class="col form-group">
+               <div class="custom-control custom-switch" style="margin-top: 38px;">
+                {% render_field form.all_applicable id="id_all_applicable_update" class="custom-control-input" %}
+                <label class="custom-control-label" for="id_all_applicable_update">Applicable for All Categorys</label>
+              </div>
+            </div>
+          </div> -->
+
+          <div class="form-row">
+            <div class="col form-group">
+                 <div class="custom-control custom-switch">
+                  {% render_field form.deactivate id="id_deactivate_update" class="custom-control-input" %}
+                  <label class="custom-control-label" for="id_deactivate_update">Deactivate Coupon</label>
+                </div>
+
+            </div>
+          </div>
+
+          <div class="form-row" style="float: right;">
+            <div class="col form-group">
+               <button type="Submit" class="btn btn-info">Save</button>
+               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div>

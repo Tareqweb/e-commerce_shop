@@ -1,0 +1,113 @@
+
+<div class="modal fade" id="order-details-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 70% !important;">
+    <div class="modal-content">
+      <div class="modal-header">
+      	<span>Order ID - {{ order.id_no }}</span>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body tab-content py-4">
+
+			<aside class="col-sm-12" style="margin-top: 10px;">
+				<div class="card mb-3">
+					<article class="card-body">
+						<header class="mb-4">
+							<div class="row">
+								<div class="col">
+									<p style="margin-bottom: 5px;"><b>Order Details</b></p>
+									<span>Order ID: {{ order.id_no }}</span><br>
+									<span>Payment ID: {{ order.payment_id }}</span>
+
+									<p class="mt-2" style="margin-bottom: 5px;"><b>Order Status</b></p>
+									<span>Status: {{ order.orderstatus.status }}</span><br>
+									<span>Delivery Between: {{ order.orderstatus.expected_delivery_form|date:"m-d-Y" }} - {{ order.orderstatus.expected_delivery_to|date:"m-d-Y" }}</span>
+									
+									{% if order.orderstatus.status == "Shipment" %}
+									<br>
+									{% if order.orderstatus.tracking_url %}
+										<a target="_blank" href="{{ order.orderstatus.tracking_url }}">Track Your Order</a>
+									{% else %}
+										<a target="_blank" href="/order/order-tracking/">Track Your Order</a>
+									{% endif %}
+									{% endif %}
+
+								</div>
+								<div class="col">
+									<p style="margin-bottom: 5px;"><b>Shipping Address</b></p>
+									<span>{{ order.orderdeliveryinfo.address|linebreaksbr }}</span>
+								</div>
+							</div>
+						</header>
+					</article>
+					<article class="card-body border-top">
+						{% for vendor in order.vendororder_set.all %}
+							{% for product in vendor.vendororderproduct_set.all %}
+							  <div class="media border p-3">
+							    <img src="{{ product.product.image_sm.url }}" alt="{{ product.product.slug }}" class="mr-3 mt-3" style="width:60px;">
+							    <div class="media-body">
+								<div class="row">
+									<div class="col-8">
+								      <small style="font-size: 16px;">
+								      	<a href="{% url 'product_details' product.product.slug %}" target="_blank">{{ product.product.name }}</a>
+								      </small><br>
+								      <small>{{ product.quantity }} x ${{ product.product_price }} = Total: ${{ product.get_price }}</small>
+								      <p></p> 
+									</div>
+									<div class="col-4">
+										{% if not product.is_reviewd %}
+										<a href="{% url 'order_confirm_recived' product.id %}">
+										<button type="button" class="btn btn-primary btn-sm" style="float: right;margin-right: 10px;">Confirm Recived</button>
+										</a>
+										{% endif %}
+									</div>
+								</div>
+
+							    </div>
+							  </div>
+
+							{% endfor %}
+						{% endfor %}
+
+						<dl class="row" style="margin-top: 30px;">
+						  <dt class="col-sm-10">Subtotal: <span class="float-right text-muted">{{ order.order_total_qty }} items</span></dt>
+						  <dd class="col-sm-2 text-right"><strong>${{ order.order_subtotal_amount|floatformat:2 }}</strong></dd>
+						  <dt class="col-sm-10">Delivery charge: <span class="float-right text-muted">{{ order.delivery_method }}</span></dt>
+						  <dd class="col-sm-2 text-right"><strong>${{ order.get_delivery_total|floatformat:2 }}</strong></dd>
+
+						  {% if order.is_valid_promo %}
+						  <dt class="col-sm-10">Discount: <span class="float-right text-muted">{% if order.is_valid_promo %}{{ order.get_promo_percentage }}{% else %}-{% endif %}</span></dt>
+						  <dd class="col-sm-2 text-right text-success"><strong>{% if order.is_valid_promo %}${{ order.get_promo_amount|floatformat:2 }}{% else %}-{% endif %}</strong></dd>
+						  {% endif %}
+
+						  <dt class="col-sm-10">Tax: <span class="float-right text-muted">-</span></dt>
+						  <dd class="col-sm-2 text-right text-success"><strong>${{ order.get_tax_total|floatformat:2 }}</strong></dd>
+
+			              {% if order.is_cancellation %}
+			              <dt class="col-sm-10">Cancellation amount: <span class="float-right text-muted">-</span></dt>
+			              <dd class="col-sm-2 text-right text-success"><strong>${{ order.get_total_cancellation_amount }}</strong></dd>
+			              {% endif %}
+
+			              {% if not order.is_cancellation %}
+			              <dt class="col-sm-10">Total: <span class="float-right text-muted">-</span></dt>
+			              <dd class="col-sm-2 text-right">
+			                <strong class="h5 text-dark">${{ order.get_order_total|floatformat:2 }}</strong>
+			              </dd>
+			              {% else %}
+			              <dt class="col-sm-10">Total: <span class="float-right text-muted">-</span></dt>
+			              <dd class="col-sm-2 text-right">
+			                <strong class="h5 text-dark">${{ order.get_total_cancellation_total|floatformat:2 }}</strong>
+			              </dd>
+			              {% endif %}
+
+						</dl>
+
+					</article>
+				</div>
+			</aside>
+
+        
+      </div>
+    </div>
+  </div>
+</div>
+

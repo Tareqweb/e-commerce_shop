@@ -1,0 +1,43 @@
+{% load widget_tweaks %}
+
+<div class="modal" id="myModalUpdate">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Sub Category</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'subcategory_update' subcategory.id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+  
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Category</label>
+                {% render_field form.category class="form-control" %}
+            </div>
+            <div class="col form-group">
+              <label>Name</label>
+                {% render_field form.name class="form-control" %}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col form-group">
+               <div class="custom-control custom-switch">
+                {% render_field form.hide_sub_category id="id_hide_sub_category_update" class="custom-control-input" %}
+                <label class="custom-control-label" for="id_hide_sub_category_update">Hide Product From Home</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row" style="float: right;">
+            <div class="col form-group">
+               <button type="Submit" class="btn btn-info">Save</button>
+               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div>

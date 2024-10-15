@@ -1,0 +1,128 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Properties</li>
+    </ol>
+
+  <div class="card mb-4">
+      <div class="card-header">
+          <i class="fas fa-box mr-1"></i>
+          Free shipping
+      </div>
+      <div class="card-body">
+        <form action="{% url 'dashboard_free_shipping_create_or_update' %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Amount</label>
+                {% render_field free_form.amount class="form-control" %}
+            </div>
+            <div class="col form-group">
+              <label>Shipping name</label>
+                {% render_field free_form.shipping_name class="form-control" %}
+            </div>
+            <div class="col form-group">
+              <label>Delivery time</label>
+                {% render_field free_form.delivery_time class="form-control" %}
+            </div> 
+          </div>
+          <div class="form-row">
+            <div class="col-12 form-group">
+              <label>Zip Code</label>
+                {% render_field free_form.zipcodes rows="2" class="form-control" %}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-12 form-group">
+                 <div class="custom-control custom-switch">
+                  {% render_field free_form.apply_for_all class="custom-control-input" %}
+                  <label class="custom-control-label" for="id_apply_for_all">Apply for all zip code</label>
+                </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-12 form-group">
+              <button type="submit" style="float: right;" class="btn btn-info">Save</button>
+            </div> 
+          </div>
+        </form>
+      </div>
+  </div>
+
+  <div class="card mb-4">
+      <div class="card-header">
+          <i class="fas fa-box mr-1"></i>
+          Shipping Price Between $(1-50)
+      </div>
+      <div class="card-body">
+        <form action="{% url 'dashboard_shipping_price_create_or_update' %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Shipping Amount when cart amount less then and equal $10.</label>
+                {% render_field shipping_form.amount_lte_10 class="form-control" %}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Shipping Amount when cart amount less then and equal $20.</label>
+                {% render_field shipping_form.amount_lte_20 class="form-control" %}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Shipping Amount when cart amount less then and equal $30.</label>
+                {% render_field shipping_form.amount_lte_30 class="form-control" %}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Shipping Amount when cart amount less then and equal $40.</label>
+                {% render_field shipping_form.amount_lte_40 class="form-control" %}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Shipping Amount when cart amount less then and equal $50.</label>
+                {% render_field shipping_form.amount_lte_50 class="form-control" %}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-12 form-group">
+              <button type="submit" style="float: right;" class="btn btn-info">Save</button>
+            </div> 
+          </div>
+        </form>
+      </div>
+  </div>
+
+  <div class="card mb-4">
+      <div class="card-header">
+          <i class="fas fa-box mr-1"></i>
+          Grocery shipping area
+      </div>
+      <div class="card-body">
+        <form action="{% url 'dashboard_glossary_zipcode_create_or_update' %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+          <div class="form-row">
+            <div class="col-12 form-group">
+              <label>Zip Code</label>
+                {% render_field glossary_form.zipcodes rows="2" class="form-control" placeholder="123,1234,12345" %}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-12 form-group">
+              <button type="submit" style="float: right;" class="btn btn-info">Save</button>
+            </div> 
+          </div>
+        </form>
+      </div>
+  </div>
+
+</div>
+
+
+<br><br>
+{% endblock %}

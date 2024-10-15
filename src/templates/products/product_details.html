@@ -1,0 +1,770 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<style>
+	.container{
+		/*max-width: 95% !important;*/
+	}
+	.inner-container{
+		/*max-width: 75% !important;*/
+	}
+
+  .xzoom-preview{
+    z-index: 99999 !important;
+  }
+
+.page-title-overlap + * {
+    position: inherit;
+    margin-top: -2.875rem;
+    z-index: 5;
+}
+
+.page-title-overlap {
+    padding-bottom: 3.375rem;
+}
+
+.xzoom {
+    box-shadow:none;
+
+}
+
+.zoom-main-image{
+  width: 100%;
+}
+
+.zoom-main-image img{
+    width: 100%;
+    height: calc(100vh - 10em);
+
+}
+
+.xzoom-gallery{
+  /*width: 80px !important;*/
+  /*height: 80px !important;*/
+  margin: 5px;
+}
+
+.xzoom-thumbs{
+  /*background: #f3f5f9;*/
+}
+
+  .cz-carousel.cz-controls-outside [data-controls="next"]{
+    margin-right: -1rem;
+  }
+  .cz-carousel.cz-controls-outside [data-controls="prev"]{
+    margin-left: -1rem;
+  }
+  .cz-carousel.cz-controls-outside {
+      padding: 0rem;
+  }
+
+.xzoom-source img, .xzoom-preview img, .xzoom-lens img {
+  display: block;
+  max-width: none;
+  max-height: none;
+  -webkit-transition: none;
+  -moz-transition: none;
+  -o-transition: none;
+  transition: none;
+}
+
+
+</style>
+{% endblock %}
+
+
+{% block bodyjs %}
+<script type='text/javascript'>
+    $(document).ready(function() {
+        var instance = $('.xzoom, .xzoom-gallery').xzoom({
+          tint: '#006699',
+          Xoffset: 10,
+          zoomWidth: 700, 
+          zoomHeight: 550,
+        });
+
+      // $('.xzoom-gallery', $(this).parent()).each(function () {
+      //     instance.xappend($(this));
+      // });
+
+      $('#xzoom-fancy').bind('click', function(event) {
+          var xzoom = $(this).data('xzoom');
+          xzoom.closezoom();
+          $.fancybox.open(xzoom.gallery().cgallery, {padding: 0, helpers: {overlay: {locked: false}}});
+          event.preventDefault();
+      });
+
+      $("table").addClass("table")
+    });
+
+
+function chnageImageByColor(self){
+  var imgObj = $(self).attr("target_image")
+  $(imgObj).click()
+}
+
+
+function UpdateQuantity(self){
+  var action = $(self).attr('data-type')
+  var qty =  parseInt($("#id_quantity").val())
+  if (action == "plus") {
+    $("#id_quantity").val(qty+1)
+  }
+  if (action == "minus" && qty > 1) {
+    $("#id_quantity").val(qty-1)
+  }
+}
+
+var matchHeight = function () {
+  
+  function init() {
+    eventListeners();
+    matchHeight();
+  }
+  
+  function eventListeners(){
+    $(window).on('resize', function() {
+      matchHeight();
+    });
+  }
+  
+  function matchHeight(){
+    var groupName = $('.card');
+    var groupHeights = [];
+    
+    groupName.css('min-height', 'auto');
+    
+    groupName.each(function() {
+      groupHeights.push($(this).outerHeight());
+    });
+    
+    var maxHeight = Math.max.apply(null, groupHeights);
+    groupName.css('min-height', maxHeight);
+  };
+  
+  return {
+    init: init
+  };
+  
+} ();
+
+$(document).ready(function() {
+  matchHeight.init();
+});
+
+
+function checkZipCode(){
+  var url = "/check_zip_code/" + $("#zip_code_search").val()
+  $.ajax({
+    url: url,
+    type: 'get',
+    dataType: 'json',
+    success: function (data) {
+      $("#zipMessage").html(data.message)
+      if (data.status) {
+          setTimeout(
+            function() {
+              $("#productForm").submit()
+            }, 1000);
+      }
+    }
+  })
+}
+
+
+function checkZipCodeWithByNow(){
+  var url = "/check_zip_code/" + $("#buynow_zip_code_search").val()
+  $.ajax({
+    url: url,
+    type: 'get',
+    dataType: 'json',
+    success: function (data) {
+      var new_url = $("#productForm").attr("action") + "?buy_now=True"
+      $("#productForm").attr("action", new_url)
+      $("#buynow_zipMessage").html(data.message)
+      if (data.status) {
+          setTimeout(
+            function() {
+              $("#productForm").submit()
+            }, 1000);
+      }
+    }
+  })
+}
+
+
+
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-1" style="max-width: 98% !important;">
+      <!-- Gallery + details-->
+      <div class="mb-5">
+        <div class="px-lg-3">
+            <div class="row">
+              <!-- Product gallery-->
+              <div class="col-lg-5 pr-lg-0">
+
+                <div class="col-sm-12">
+                <div class="zoom-main-image" style="margin-left: 15%;width: 85%;">
+                  <img class="xzoom" id="xzoom-fancy" src="{{ product.image.url }}" xoriginal="{{ product.image.url }}" style="" />
+                </div>
+                <div class="xzoom-thumbs" style="width: 10%;position: absolute;top: 0;">
+                  <a href="{{ product.image.url }}">
+                  <img class="xzoom-gallery" src="{{ product.image.url }}"  xpreview="{{ product.image.url }}" style="height: 80px;width: 100%">
+                  </a>
+                  {% for image in product.productimage_set.all %}
+                  <a href="{{ image.image.url }}" id="colorimage{{image.color.id}}">
+                    <img class="xzoom-gallery" style="height: 80px;width: 100%" src="{{ image.image.url }}"  xpreview="{{ image.image.url }}">
+                  </a>
+                  {% endfor %}
+                </div>
+                </div>
+
+              </div>
+
+
+
+              <!-- Product details-->
+              <div class="col-lg-7 pt-4 pt-lg-0">
+                <div class="product-details pb-3" style="max-width: 100%;">
+                  <h1 class="h3 mb-1">{{ product.name }}</h1>
+                    <div class="mb-1">
+                      <div class="star-rating">
+                        {% if product.total_review_star >= 5 %}
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        {% elif product.total_review_star <= 4 and product.total_review_star > 3 %}
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        {% elif product.total_review_star <= 3 and product.total_review_star > 2 %}
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        {% elif product.total_review_star <= 2 and product.total_review_star > 1 %}
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        {% elif product.total_review_star <= 1 and product.total_review_star > 1 %}
+                        <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        {% else %}
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        <i class="czi-star font-size-sm text-muted mr-1"></i>
+                        {% endif %}
+                      </div>
+                      <span class="d-inline-block font-size-sm text-white opacity-70 align-middle mt-1 ml-1">{{ product.total_review }} Reviews</span>
+                    </div>
+
+                  {% if product.is_discount_available %}
+                  <div class="mb-3">
+                    <span class="h3 font-weight-normal text-accent mr-1">${{ product.sell_price }}</span>
+                    <del class="text-muted font-size-lg mr-3">${{ product.price }}</del>
+                    <span class="badge badge-danger badge-shadow align-middle mt-n2">Sale</span>
+                    <p style="margin-bottom: 5px;">Seller/Store/Brand: <a href="{% url 'vendor_details' product.vendor.id %}">{{ product.vendor.company_name }}</a></p>
+                    <p style="margin: 0px;">Product id: {{ product.id }}</p>
+                  </div>
+                  {% else %}
+                  <div class="mb-3">
+                    <span class="h3 font-weight-normal text-accent mr-1">${{ product.price }}</span>
+                    <p style="margin-bottom: 5px;">Seller/Store/Brand: <a href="{% url 'vendor_details' product.vendor.id %}">{{ product.vendor.company_name }}</a></p>
+                    <p style="margin: 0px;">Product id: {{ product.id }}</p>
+                  </div>
+                  {% endif %}
+
+                  {% if product.short_description %}
+                  <div class="d-flex mb-1 font-size-md">
+                    {{ product.short_description|linebreaks }}
+                  </div>
+                  {% endif %}
+
+                  <form method="POST" action="{% url 'add_to_cart' %}" id="productForm">{% csrf_token %}
+                  <input type="number" value="{{ product.id }}" name="product" style="display: none;">
+
+
+            {% if product.approved and not product.deactivate and not product.rejected %}
+                {% if product.stock >= 2 %}
+                  
+                  {% if product.is_color %}
+                  <div class="font-size-sm mb-2">
+                    <span class="text-heading font-weight-medium mr-1">Color:</span>
+                    <span class="text-muted" id="colorOption">{{ product.color.first.color }}</span>
+                  </div>
+                  <div class="position-relative mr-n4 mb-2">
+                    {% for color in product.color.all %}
+                    <div class="custom-control custom-option custom-control-inline mb-2">
+                      <input class="custom-control-input" data-label="colorOption" type="radio" name="color" id="color-{{ forloop.counter }}" value="{{ color.color }}" {% if forloop.first %} checked="" {% endif %}>
+                      <label class="custom-option-label" for="color-{{ forloop.counter }}" target_image="#colorimage{{color.id}}" onclick="chnageImageByColor(this);">{{ color.color }}</label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+
+
+                  {% if product.is_size %}
+                  <div class="font-size-sm mb-2">
+                    <span class="text-heading font-weight-medium mr-1">Size:</span>
+                    <span class="text-muted" id="sizeOption">{{ product.size.first.size }}</span>
+                  </div>
+                  <div class="position-relative mr-n4 mb-1">
+                    {% for size in product.size.all %}
+                    <div class="custom-control custom-option custom-control-inline mb-2">
+                      <input class="custom-control-input" data-label="sizeOption" type="radio" name="size" id="size-{{ forloop.counter }}" value="{{ size.size }}" {% if forloop.first %} checked="" {% endif %}>
+                      <label class="custom-option-label" for="size-{{ forloop.counter }}">{{ size.size }}</label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+
+
+
+                  {% if product.productsizeguide_set.exists %}
+                  <div class="font-size-sm mb-2">
+                    <a href="javascript:;" data-toggle="modal" data-target="#size-guid-modal">Size Guide</a>
+                  </div>
+                  {% endif %}
+
+                  <div class="font-size-sm mb-1">
+                    <span class="text-heading font-weight-medium mr-1">Quantity:</span>
+                  </div>
+                  <div class="align-items-center pt-1 pb-2">
+                    <div class="input-group" style="width: 220px;">
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default btn-primary" data-type="minus" style="border-radius: 5px 0px 0px 5px;" onclick="UpdateQuantity(this);">
+                            <img src="{% static 'images/minus.svg' %}" style="width: 12px;">
+                          </button>
+                        </span>
+                          <input type="text" name="quantity" id="id_quantity" class="form-control input-number" value="1" min="1" style="text-align: center;font-weight: 500;">
+                        <span class="input-group-btn">
+                        <button type="button" class="btn btn-primary btn-number" data-type="plus" style="border-radius: 0px 5px 5px 0px;"  onclick="UpdateQuantity(this);">
+                          <img src="{% static 'images/plus.svg' %}" style="width: 12px;">
+                        </button>
+                        </span>
+                    </div>
+
+
+                  </div>
+
+                  <div class="d-flex align-items-center pt-2 pb-4">
+                  {% if grocery_obj and product.category.sub_category.category.express_shipping %}
+                  <span id="add_remove_cart_btn">
+                    <button class="btn btn-primary btn-shadow" type="button" data-toggle="modal" data-target="#zipcode-modal"><i class="czi-cart font-size-lg mr-2"></i>Add to Cart</button>
+                  </span>
+                  {% else %}
+                  <span id="add_remove_cart_btn">
+                    <button class="btn btn-primary btn-shadow" type="submit"><i class="czi-cart font-size-lg mr-2"></i>Add to Cart</button>
+                  </span>
+                  {% endif %}
+
+                  {% if request.user.is_authenticated %}
+                    <a href="{% url 'add_to_wishlist' product.id %}" style="margin-left: 10px;">
+                      <button class="btn btn-primary btn-shadow" type="button"><i class="czi-heart font-size-lg mr-2"></i><span class="d-none d-sm-inline">Add to </span>Wishlist</button>
+                    </a>
+                  {% endif %}
+
+                  {% if product.approved and not product.deactivate and not product.rejected %}
+                  {% if product.stock >= 2 %}
+                    {% if grocery_obj and product.category.sub_category.category.express_shipping %}
+                      <button class="btn btn-primary btn-shadow" style="margin-left: 10px;" type="button" data-toggle="modal" data-target="#buynow_zipcode_modal"><i class="czi-compare font-size-lg mr-2"></i>Buy Now</button>
+                    {% else %}
+                      <button class="btn btn-primary btn-shadow" style="margin-left: 10px;" formaction="{% url 'add_to_cart' %}?buy_now=True" type="submit"><i class="czi-compare font-size-lg mr-2"></i>Buy Now</button>
+                    {% endif %}
+
+                  {% endif %}
+                  {% endif %}
+
+                  </div>
+                
+                {% else %}
+                  <div class="status" style="margin-bottom: 10px;padding: 11px;font-size: 15px;color: red;">
+                    <p style="margin: 0px;">Out of Stock</p>
+                  </div>
+                {% endif %}
+                {% else %}
+                <div class="status" style="margin-bottom: 10px;padding: 11px;font-size: 15px;color: red;">
+                  <p style="margin: 0px;">This product is need approval</p>
+                </div>
+              {% endif %}
+              </form>
+
+            </div>
+
+
+              <section class="mb-4 mb-lg-5">
+                <!-- Nav tabs-->
+                <ul class="nav nav-tabs" role="tablist">
+                  <li class="nav-item"><a class="nav-link active" href="#details" data-toggle="tab" role="tab" aria-selected="true">Product details</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#reviews" data-toggle="tab" role="tab" aria-selected="false">Reviews</a></li>
+                </ul>
+
+                <div class="tab-content pt-2">
+                  <!-- Product details tab-->
+                  <div class="tab-pane fade active show" id="details" role="tabpanel">
+                      <div class="col-lg-12 font-size-md">
+                        {{ product.description|safe }}
+                      </div>
+                  </div>
+                  <!-- Reviews tab-->
+                  <div class="tab-pane fade" id="reviews" role="tabpanel">
+                    <!-- Reviews-->
+                    <div class="row pt-2 pb-3">
+                      <div class="col-lg-4 col-md-5">
+                        <h3 class="h4 mb-4">{{ product.total_review }} Reviews</h3>
+
+                        <div class="star-rating mr-2">
+                          {% if product.total_review_star >= 5 %}
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          {% elif product.total_review_star <= 4 and product.total_review_star > 3 %}
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          {% elif product.total_review_star <= 3 and product.total_review_star > 2 %}
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          {% elif product.total_review_star <= 2 and product.total_review_star > 1 %}
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          {% elif product.total_review_star <= 1 and product.total_review_star > 1 %}
+                          <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          {% else %}
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          <i class="czi-star font-size-sm text-muted mr-1"></i>
+                          {% endif %}
+                        </div>
+
+                        <span class="d-inline-block align-middle">{{ product.total_review_star }} Overall rating</span>
+
+                      </div>
+                      <div class="col-lg-8 col-md-7">
+                        <div class="d-flex align-items-center mb-2">
+                          <div class="text-nowrap mr-3"><span class="d-inline-block align-middle text-muted">5</span><i class="czi-star-filled font-size-xs ml-1"></i></div>
+                          <div class="w-100">
+                            <div class="progress" style="height: 4px;">
+                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ product.total_5_review_percentage  }}%;" aria-valuenow="{{ product.total_5_review_percentage  }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </div><span class="text-muted ml-3">{{ product.total_5_review }}</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                          <div class="text-nowrap mr-3"><span class="d-inline-block align-middle text-muted">4</span><i class="czi-star-filled font-size-xs ml-1"></i></div>
+                          <div class="w-100">
+                            <div class="progress" style="height: 4px;">
+                              <div class="progress-bar" role="progressbar" style="width: {{ product.total_4_review_percentage  }}%; background-color: #a7e453;" aria-valuenow="{{ product.total_4_review_percentage  }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </div><span class="text-muted ml-3">{{ product.total_4_review }}</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                          <div class="text-nowrap mr-3"><span class="d-inline-block align-middle text-muted">3</span><i class="czi-star-filled font-size-xs ml-1"></i></div>
+                          <div class="w-100">
+                            <div class="progress" style="height: 4px;">
+                              <div class="progress-bar" role="progressbar" style="width: {{ product.total_3_review_percentage  }}%; background-color: #ffda75;" aria-valuenow="{{ product.total_3_review_percentage  }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </div><span class="text-muted ml-3">{{ product.total_3_review }}</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                          <div class="text-nowrap mr-3"><span class="d-inline-block align-middle text-muted">2</span><i class="czi-star-filled font-size-xs ml-1"></i></div>
+                          <div class="w-100">
+                            <div class="progress" style="height: 4px;">
+                              <div class="progress-bar" role="progressbar" style="width: {{ product.total_2_review_percentage  }}%; background-color: #fea569;" aria-valuenow="{{ product.total_2_review_percentage  }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </div><span class="text-muted ml-3">{{ product.total_2_review }}</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                          <div class="text-nowrap mr-3"><span class="d-inline-block align-middle text-muted">1</span><i class="czi-star-filled font-size-xs ml-1"></i></div>
+                          <div class="w-100">
+                            <div class="progress" style="height: 4px;">
+                              <div class="progress-bar bg-danger" role="progressbar" style="width: {{ product.total_1_review_percentage  }}%;" aria-valuenow="{{ product.total_1_review_percentage  }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </div><span class="text-muted ml-3">{{ product.total_1_review }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <hr class="mt-4 pb-4 mb-3">
+                    <div class="row pb-4">
+                      <!-- Reviews list-->
+                      <div class="col-md-7">
+                        <!-- Review-->
+                        {% for review in product.total_review_list %}
+                        <div class="product-review pb-4 mb-4 border-bottom">
+                          <div class="d-flex mb-3">
+                            <div class="media media-ie-fix align-items-center mr-4 pr-2">
+                              <div class="media-body">
+                                <h6 class="font-size-sm mb-0">{{ review.user.username }}</h6><span class="font-size-ms text-muted">{{ review.created_at|date:"Y-m-d" }}</span>
+                              </div>
+                            </div>
+                            <div>
+                              <div class="star-rating">
+
+                                {% if review.star >= 5 %}
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                {% elif review.star <= 4 and review.star > 3 %}
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                {% elif review.star <= 3 and review.star > 2 %}
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                {% elif review.star <= 2 and review.star > 1 %}
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                {% elif review.star <= 1 and review.star > 1 %}
+                                <i class="czi-star-filled font-size-sm text-accent mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                {% else %}
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                <i class="czi-star font-size-sm text-muted mr-1"></i>
+                                {% endif %}
+
+                              </div>
+                            </div>
+                          </div>
+                          <p class="font-size-md mb-2">{{ review.comment|linebreaks }}</p>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="mt-1">
+      <section class="bg-secondary">
+        <div class="container py-xl-2">
+          <div class="d-flex flex-wrap justify-content-between align-items-center pt-1 border-bottom pb-3 mb-3">
+            <h2 class="h3 mb-0 pt-3 mr-3">Reletd Products</h2>
+            <div class="pt-3"><a class="btn btn-outline-accent btn-sm" href="{% url 'product_category_details' product.category.slug %}">More products<i class="czi-arrow-right ml-1 mr-n1"></i></a></div>
+          </div>
+          <div class="cz-carousel cz-controls-static cz-controls-outside cz-dots-enabled pt-2 mb-5">
+            <div class="cz-carousel-inner" data-carousel-options="{
+              &quot;items&quot;: 1,
+              &quot;gutter&quot;: 16, 
+              &quot;controls&quot;: true, 
+              &quot;autoHeight&quot;: false, 
+              &quot;responsive&quot;: {
+              &quot;0&quot;:{&quot;items&quot;:2}, 
+              &quot;480&quot;:{&quot;items&quot;:2}, 
+              &quot;720&quot;:{&quot;items&quot;:3}, 
+              &quot;991&quot;:{&quot;items&quot;:4}, 
+              &quot;1140&quot;:{&quot;items&quot;:4}, 
+              &quot;1300&quot;:{&quot;items&quot;:5}, 
+              &quot;1400&quot;:{&quot;items&quot;:5}, 
+              &quot;1500&quot;:{&quot;items&quot;:5},
+              &quot;1600&quot;:{&quot;items&quot;:6},
+              &quot;1900&quot;:{&quot;items&quot;:7}
+              }
+              }">
+              <!-- Product-->
+              {% for product in releted_products %}
+              {% if product.approved and not product.deactivate and not product.rejected %}
+              <div class="">
+                <div class="card product-card card-static pb-3">
+                  {% if product.is_discount_available %}
+                  <span class="badge badge-danger badge-shadow">Sale</span>
+                  {% endif %}
+                  <a class="card-img-top d-block overflow-hidden" href="{% url 'product_details' product.slug %}">
+                    <img class="custom-card-image" src="{% if product.image_sm %}{{ product.image_sm.url }}{% else %}{{ product.image.url }}{% endif %}" alt="Product" style="padding: 0.6rem;">
+                  </a>
+                  <div class="card-body py-2"><a class="product-meta d-block font-size-xs pb-1" href="{% url 'product_category_details' product.category.slug %}">{{ product.category.name }}</a>
+                    <h3 class="product-title font-size-sm" style="margin-bottom: 0.3rem;"><a href="{% url 'product_details' product.slug %}">{{ product.name|truncatechars:70 }}</a></h3>
+
+                    {% if product.is_discount_available %}
+                <div class="product-price" style="margin-bottom: 0.3rem;">
+                  <span class="text-accent">${{ product.sell_price }}</span>
+                  <del class="font-size-sm text-muted">${{ product.price }}</del>
+                </div>
+                {% else %}
+                <div class="product-price" style="margin-bottom: 0.3rem;">
+                  <span class="text-accent">${{ product.price }}</span>
+                </div>
+                {% endif %}
+
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+               {% endfor %}
+            </div>
+          </div>
+      </div>
+      </section>
+
+
+      <hr>
+      
+    </div>
+
+{% if request.user.is_authenticated %}
+    <div class="mt-1">
+      <section class="bg-secondary">
+        <div class="container py-xl-2">
+          <div class="d-flex flex-wrap justify-content-between align-items-center pt-1 border-bottom pb-3 mb-3">
+            <h2 class="h3 mb-0 pt-3 mr-3">Recently Views Products</h2>
+          </div>
+          <div class="cz-carousel cz-controls-static cz-controls-outside cz-dots-enabled pt-2 mb-5">
+            <div class="cz-carousel-inner" data-carousel-options="{
+              &quot;items&quot;: 1,
+              &quot;gutter&quot;: 16, 
+              &quot;controls&quot;: true, 
+              &quot;autoHeight&quot;: false, 
+              &quot;responsive&quot;: {
+              &quot;0&quot;:{&quot;items&quot;:2}, 
+              &quot;480&quot;:{&quot;items&quot;:2}, 
+              &quot;720&quot;:{&quot;items&quot;:3}, 
+              &quot;991&quot;:{&quot;items&quot;:4}, 
+              &quot;1140&quot;:{&quot;items&quot;:4}, 
+              &quot;1300&quot;:{&quot;items&quot;:5}, 
+              &quot;1400&quot;:{&quot;items&quot;:5}, 
+              &quot;1500&quot;:{&quot;items&quot;:5},
+              &quot;1600&quot;:{&quot;items&quot;:6},
+              &quot;1900&quot;:{&quot;items&quot;:7}
+              }
+              }">
+              <!-- Product-->
+              {% for product in recently_views %}
+              {% if product.product.approved and not product.product.deactivate and not product.product.rejected %}
+              <div class="">
+                <div class="card product-card card-static pb-3">
+                  {% if product.product.is_discount_available %}
+                  <span class="badge badge-danger badge-shadow">Sale</span>
+                  {% endif %}
+                  <a class="card-img-top d-block overflow-hidden" href="{% url 'product_details' product.product.slug %}">
+                    <img class="custom-card-image" src="{% if product.product.image_sm %}{{ product.product.image_sm.url }}{% else %}{{ product.product.image.url }}{% endif %}" alt="Product" style="padding: 0.6rem;">
+                  </a>
+                  <div class="card-body py-2"><a class="product-meta d-block font-size-xs pb-1" href="{% url 'product_category_details' product.product.category.slug %}">{{ product.product.category.name }}</a>
+                    <h3 class="product-title font-size-sm" style="margin-bottom: 0.3rem;"><a href="{% url 'product_details' product.product.slug %}">{{ product.product.name|truncatechars:70 }}</a></h3>
+
+                    {% if product.product.is_discount_available %}
+                <div class="product-price" style="margin-bottom: 0.3rem;">
+                  <span class="text-accent">${{ product.product.sell_price }}</span>
+                  <del class="font-size-sm text-muted">${{ product.product.price }}</del>
+                </div>
+                {% else %}
+                <div class="product-price" style="margin-bottom: 0.3rem;">
+                  <span class="text-accent">${{ product.product.price }}</span>
+                </div>
+                {% endif %}
+
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+               {% endfor %}
+            </div>
+          </div>
+      </div>
+      </section>
+
+
+      <hr>
+      
+    </div>
+{% endif %}
+
+    {% include 'products/size_guid_modal.html' %}
+
+
+<div class="modal fade" id="zipcode-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Delivery Area</span>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body tab-content py-4" style="padding-top: 10px !important;">
+          <div class="form-group">
+            <label for="zip_code_search">Enter your Zip Code</label>
+            <input class="form-control" type="text" id="zip_code_search">
+            <div style="margin-top: 10px;font-size: 20px;" id="zipMessage"></div>
+          </div>
+          <button class="btn btn-primary btn-block btn-shadow" type="button" onclick="checkZipCode()">Check Availability</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="buynow_zipcode_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Delivery Area</span>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body tab-content py-4" style="padding-top: 10px !important;">
+          <div class="form-group">
+            <label for="zip_code_search">Enter your Zip Code</label>
+            <input class="form-control" type="text" id="buynow_zip_code_search">
+            <div style="margin-top: 10px;font-size: 20px;" id="buynow_zipMessage"></div>
+          </div>
+          <button class="btn btn-primary btn-block btn-shadow" type="button" onclick="checkZipCodeWithByNow()">Check Availability</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

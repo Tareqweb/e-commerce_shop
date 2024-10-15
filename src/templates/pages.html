@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css %}
+<style>
+  body{
+    background-color: #f6f9fc !important;
+  }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-title-overlap bg-dark pt-3 pb-3">
+  <div class="container pt-2 pb-2" style="text-align: center;">
+    <h1 style="color: #fff;">{{ title }}</h1>
+  </div>
+</div>
+
+<div class="container pb-5 mb-2 mb-md-4 mt-4">
+  <div class="row">
+    {{ xobject.description|safe|linebreaks }}
+  </div>
+</div>
+{% endblock %}

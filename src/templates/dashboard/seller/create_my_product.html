@@ -1,0 +1,299 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block bodyjs %}
+<script>
+$(document).ready(function() {
+    $('#id_size').select2({placeholder: 'Select Size'});
+    $('#id_color').select2({placeholder: 'Select Color'});
+
+  $('.formset_image_color').formset({
+    addText: 'ADD MORE',
+    deleteText: 'Remove',
+    prefix: 'productimage_set',
+  });
+
+  $('.formset_size_guid').formset({
+    addText: 'ADD MORE',
+    deleteText: 'Remove',
+    prefix: 'productsizeguide_set',
+  });
+
+  
+
+});
+
+</script>
+{% endblock %}
+
+{% block css %}
+<style>
+	.django-ckeditor-widget{
+		width: 100% !important;
+	}
+	#cke_id_description{
+		width: 100% !important;
+	}
+	.add-row{
+		background-color: #17a2b8;
+		padding: 5px;
+		color: #fff;
+		border-radius: 5px;
+	}
+	.delete-row{
+		background-color: #db5d50;
+		padding: 5px;
+		color: #fff;
+		border-radius: 5px;
+		height: 37px;
+	}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Product create</li>
+    </ol>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-box-open mr-1"></i>
+        Product Create
+    </div>
+    <div class="card-body">
+    		{{ form.media }}
+			<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+				<div class="card" style="background-color: #f9f9f9;">
+				  <div class="card-body">
+				<div class="form-row">
+					<div class="col-7 form-group">
+						<label>Product Name</label>
+					  	{% render_field form.name class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Price</label>
+					  	{% render_field form.price class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Stock</label>
+					  	{% render_field form.stock class="form-control" %}
+					</div>
+				</div>
+
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Discount percentage</label>
+					  	{% render_field form.discount_percentage class="form-control" %}
+					</div> 
+					<div class="col form-group">
+						<label>Tax percentage</label>
+					  	{% render_field form.tax_percentage class="form-control" %}
+					</div>
+				</div>
+
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Category</label>
+						{% render_field form.category class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Upload Cover Image</label>
+					  	{% render_field form.image class="form-control" %}
+					</div>
+					{% if form.instance.image %}
+					<div class="col-1 form-group">
+						<a href="{{ form.instance.image.url }}" target="_blank">
+							<img src="{{ form.instance.image.url }}" style="width: 40px;margin-top: 32px">
+						</a>
+					</div>
+					{% endif %}
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Size <small> (Optional)</small></label>
+						
+					  	{% render_field form.size class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Color <small> (Optional)</small></label>
+						
+					  	{% render_field form.color class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Short Description <small> (Optional)</small></label>
+						{% render_field form.short_description rows="2" class="form-control" %}
+					</div>   
+				</div>
+
+
+
+				<div class="form-row">
+					<div class="col-sm-12">
+						<label>Long Description</label>
+						{% render_field form.description class="form-control" %}
+					</div>   
+				</div>
+
+				</div>
+			</div>
+
+				<div class="card" style="background-color: #f9f9f9;margin-top: 20px;">
+				  <div class="card-body">
+					<div class="form-row">
+						<div class="col form-group">
+							<label style="font-size: 20px;">Product Measurement</label>
+						</div>   
+					</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Width(cm)</label>
+					  	{% render_field form.width required="" class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Height(cm)</label>
+					  	{% render_field form.height required="" class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Depth(cm)</label>
+					  	{% render_field form.depth required="" class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Weight(Ib)</label>
+					  	{% render_field form.weight required="" class="form-control" %}
+					</div>
+				</div>
+				</div>
+			</div>
+
+			<div class="card" style="background-color: #f9f9f9;margin-top: 20px;">
+			  <div class="card-body">
+
+				<div class="form-row">
+					<div class="col form-group">
+						<label style="font-size: 20px;">Upload Additional Image for your product</label><small> (Optional)</small>
+					</div>   
+				</div>
+				<div class="form-row">
+					<div class="col-8 form-group" style="margin: 0px;">
+						<label>Upload images</label>
+					</div>
+					<div class="col form-group" style="margin: 0px;">
+						<label>Select color for image</label>
+					</div>
+				</div>
+
+			{{ image_form.management_form }}
+			{% for formx in image_form.forms %}
+			{% for hidden in formx.hidden_fields %}
+			    {{ hidden }}
+			{% endfor %}
+				<div class="form-row formset_image_color">
+					<div class="col-7 form-group">
+						{% render_field formx.image class="form-control" %}
+					</div>
+					{% if formx.instance.image %}
+					<div class="col-1 form-group">
+						<a href="{{ formx.instance.image.url }}" target="_blank">
+							<img src="{{ formx.instance.image.url }}" style="width: 40px;">
+						</a>
+					</div>
+					{% endif %}
+					<div class="col form-group">
+						{% render_field formx.color class="form-control" placeholder="Select Color" %}
+					</div>
+				</div>
+			{% endfor %}
+			  </div>
+			</div>
+
+			<div class="card" style="background-color: #f9f9f9;margin-top: 20px;">
+			  <div class="card-body">
+
+				<div class="form-row">
+					<div class="col form-group">
+						<label style="font-size: 20px;">Size Chart for your product</label><small> (Optional)</small>
+					</div>   
+				</div>
+
+			{{ size_guid_form.management_form }}
+			{% for formx in size_guid_form.forms %}
+				{% for hidden in formx.hidden_fields %}
+				    {{ hidden }}
+				{% endfor %}
+				<div class="form-row formset_size_guid">
+					<div class="col form-group">
+						{% render_field formx.guide_col1 class="form-control" %}
+					</div>
+					<div class="col form-group">
+						{% render_field formx.guide_col2 class="form-control" %}
+					</div>
+					<div class="col form-group">
+						{% render_field formx.guide_col3 class="form-control" %}
+					</div>
+					<div class="col form-group">
+						{% render_field formx.guide_col4 class="form-control" %}
+					</div>
+					<div class="col form-group">
+						{% render_field formx.guide_col5 class="form-control" %}
+					</div>
+					<div class="col form-group">
+						{% render_field formx.guide_col6 class="form-control" %}
+					</div>
+					<div class="col form-group">
+						{% render_field formx.guide_col7 class="form-control" %}
+					</div>
+					<div class="col form-group">
+						{% render_field formx.guide_col8 class="form-control" %}
+					</div>
+				</div>
+			{% endfor %}
+			  </div>
+			</div>
+
+			<div class="card" style="background-color: #f9f9f9;margin-top: 20px;">
+			  <div class="card-body">
+
+				<div class="form-row">
+					<div class="col form-group">
+						<label style="font-size: 20px;">Size Measurements for your product</label><small> (Optional)</small>
+					</div>   
+				</div>
+
+				<div class="form-row">
+					<div class="col form-group">
+						{{ size_measurement.media }}
+						{% render_field size_measurement.content class="form-control" %}
+					</div>
+				</div>
+			  </div>
+			</div>
+
+
+
+          <div class="form-row" style="margin-top: 20px;">
+            <div class="col-12 form-group">
+                 <div class="custom-control custom-switch">
+                  {% render_field form.deactivate class="custom-control-input" %}
+                  <label class="custom-control-label" for="id_deactivate">Hide This product from Shop</label>
+                </div>
+            </div>
+          </div>
+
+			    <div class="form-group mt-3">
+			    	<button type="submit" class="btn btn-info" style="float: right;">Save</button>
+			    </div>                                          
+			</form>
+    </div>
+</div>
+
+</div>
+
+<br><br>
+{% endblock %}

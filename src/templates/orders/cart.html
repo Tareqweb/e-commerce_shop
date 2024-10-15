@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block bodyjs %}
+<script>
+
+	function manageQuantity(self){
+		var qty = $(self).val()
+		var url = "{% url 'update_cart_qty' %}";
+		$.ajax({
+		  type:'POST',
+		  url:url,
+		  data:{
+		  	qty:qty,
+		  	product:$(self).attr("product_id"),
+		  	csrfmiddlewaretoken:"{{ csrf_token }}"
+		  },
+		  success:function(data){
+		  	$("#cardTotal").text(data.cart_total.toFixed(2))
+		  }
+		});
+	}
+
+
+</script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="bg-dark">
+      <div class="container d-lg-flex justify-content-between py-2 py-lg-3">
+        <div class="order-lg-1 pr-lg-4 text-center text-lg-left">
+          <h1 class="h3 text-light mb-0">Your cart {% if not cart_obj %} is Empty {% endif %}</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="container pb-5 mb-2 mb-md-4">
+      <div class="row">
+        <!-- List of items-->
+        <section class="col-lg-9">
+          {% for product in cart_obj.cartproduct_set.all %}
+          <div class="d-sm-flex justify-content-between align-items-center my-4 pb-3 border-bottom">
+            <div class="media media-ie-fix d-block d-sm-flex align-items-center text-center text-sm-left"><a class="d-inline-block mx-auto mr-sm-4" href="shop-single-v1.html" style="width: 6rem;"><img src="{% if product.product.image_sm %}{{ product.product.image_sm.url }}{% else %}{{ product.product.image.url }}{% endif %}" alt="Product"></a>
+              <div class="media-body pt-2">
+                <h3 class="product-title font-size-base mb-2"><a href="{% url 'product_details' product.product.slug %}" target="_blank">{{ product.product.name }}</a></h3>
+                <div class="font-size-sm"><span class="text-muted mr-2">Brand:</span>{{ product.product.vendor.company_name }}</div>
+                <div class="font-size-sm">
+                  {% if product.color %}
+                	<span>
+                		<span class="text-muted mr-2">Color:</span> {{ product.color|default:"-" }}
+                	</span>
+                  {% endif %}
+                  {% if product.size %}
+                	<span style="margin-left: 20px;">
+                		<span class="text-muted mr-2">Size:</span> {{ product.size|default:"-" }}
+                	</span>
+                  {% endif %}
+                </div>
+                {% if product.product.is_discount_available %}
+                <div class="font-size-lg text-accent pt-2">
+                  <span class="text-accent">${{ product.product.sell_price }}</span>
+                  <del class="font-size-sm text-muted">${{ product.product.price }}</del>
+                </div>
+                {% else %}
+                <div class="font-size-lg text-accent pt-2">
+                  <span class="text-accent">${{ product.product.price }}</span>
+                </div>
+                {% endif %}
+
+
+              </div>
+            </div>
+            <div class="pt-2 pt-sm-0 pl-sm-3 mx-auto mx-sm-0 text-center text-sm-left" style="max-width: 9rem;">
+
+              <div class="form-group mb-0">
+                <label class="font-weight-medium" for="quantity2">Quantity</label>
+                <input class="form-control" type="number" value="{{ product.quantity|default:1 }}" product_id="{{product.product.id}}" onchange="manageQuantity(this);" min="1">
+              </div>
+              <a href="{% url 'remove_form_cart_by_id' product.product.id %}">
+              <button class="btn btn-link px-0 text-danger" type="button"><i class="czi-close-circle mr-2"></i><span class="font-size-sm">Remove</span></button>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </section>
+        <!-- Sidebar-->
+        <aside class="col-lg-3 pt-4 pt-lg-0">
+          <div class="cz-sidebar-static rounded-lg box-shadow-lg ml-lg-auto">
+            <div class="text-center mb-4 pb-3 border-bottom">
+              <h2 class="h6 mb-3 pb-1">Subtotal</h2>
+              <h3 class="font-weight-normal">
+                {% if cart_obj.is_valid_promo %}
+                $<span id="cardTotal">{{ cart_obj.cart_subtotal_with_promo|floatformat:2 }}</span>
+                <br>
+                <del class="text-muted">${{ cart_obj.cart_subtotal_amount|floatformat:2 }}</del>
+                {% else %}
+                $<span id="cardTotal">{{ cart_obj.cart_subtotal_amount|floatformat:2 }}</span>
+                {% endif %}
+                
+              </h3>
+            </div>
+            <div class="accordion" id="order-options">
+              {% if cart_obj.is_valid_promo %}
+                <p style="font-size: 18px;font-weight: bold;">Promo Applied: {{ cart_obj.promo_code }}</p>
+                <a href="{% url 'remove_promo_code' %}">
+                <button class="btn btn-outline-primary btn-block" type="button">Remove promo code</button>
+                </a>
+              {% else %}
+              
+              <form method="POST" action="{% url 'apply_promo_code' %}" class="needs-validation" method="post" novalidate="">{% csrf_token %}
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Promo code" required="" name="promo">
+                <div class="invalid-feedback">Please provide promo code.</div>
+              </div>
+              <button class="btn btn-outline-primary btn-block" type="submit">Apply promo code</button>
+              </form>
+            {% endif %}
+            </div>
+            <a class="btn btn-primary btn-shadow btn-block mt-4" href="{% url 'delivery_info' %}"><i class="czi-card font-size-lg mr-2"></i>Proceed to Checkout</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+{% endblock %}

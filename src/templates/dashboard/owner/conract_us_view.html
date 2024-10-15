@@ -1,0 +1,89 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block css %}
+<style>
+	.django-ckeditor-widget{
+		width: 100% !important;
+	}
+	#cke_id_description{
+		width: 100% !important;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Page</li>
+    </ol>
+
+	<div class="card mb-4">
+	    <div class="card-header">
+	        <i class="fas fa-box mr-1"></i>
+	        Contact Us
+	    </div>
+	    <div class="card-body">
+			<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Google Map url</label>
+					  	{% render_field form.office_location rows="2" class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Working Hour</label>
+					  	{% render_field form.working_hour rows="2" class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Address</label>
+					  	{% render_field form.office_address rows="2" class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Phone</label>
+					  	{% render_field form.office_phone rows="2" class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Email</label>
+					  	{% render_field form.office_email rows="2" class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Facebook Link</label>
+					  	{% render_field form.facebook_url class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>Twitter Link</label>
+					  	{% render_field form.twitter_url class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<label>YouTube Link</label>
+					  	{% render_field form.youtube_url class="form-control" %}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="col form-group">
+						<button type="submit" style="float: right;" class="btn btn-info">Save</button>
+					</div> 
+				</div>
+			</form>
+	    </div>
+	</div>
+</div>
+
+
+<br><br>
+{% endblock %}

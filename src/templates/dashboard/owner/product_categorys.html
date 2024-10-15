@@ -1,0 +1,381 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block css %}
+<style>
+  .card-header{
+/*    background-color: #fff;
+    color: #000;*/
+  }
+</style>
+{% endblock %}
+
+
+{% block bodyjs %}
+<script>
+  $(document).ready(function() {
+
+    var table1 =  $('#shopDataTableCategory').DataTable({
+        dom: 'Bfrtip',
+        order: [[ 0, "desc" ]],
+        paging: true,
+        pageLength: 20,
+        scrollX: true,
+        responsive: false,
+        fixedHeader: true,
+        orderCellsTop: true,
+        searching: true
+    });
+
+    $("#shopDataTableCategory_filter").html("")
+    $("#shopDataTableCategory_filter").append('<div class="col-sm-4" style="float: right;padding:0px;"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text bg-info" style="color:#fff;"><i class="fa fa-search" aria-hidden="true"></i></span></div><input id="dataTableSearchCategory" type="text" class="form-control" style="margin: 0px;"></div></div>')
+
+
+    $('#dataTableSearchCategory').on( 'keyup', function () {
+        table1.search(this.value).draw();
+    });
+
+  var table2 =  $('#shopDataTableSubCategory').DataTable({
+      dom: 'Bfrtip',
+      order: [[ 0, "desc" ]],
+      paging: true,
+      pageLength: 20,
+      scrollX: true,
+      responsive: false,
+      fixedHeader: true,
+      orderCellsTop: true,
+      searching: true
+  });
+
+  $("#shopDataTableSubCategory_filter").html("")
+  $("#shopDataTableSubCategory_filter").append('<div class="col-sm-4" style="float: right;padding:0px;"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text bg-info" style="color:#fff;"><i class="fa fa-search" aria-hidden="true"></i></span></div><input id="dataTableSearchSubCategory" type="text" class="form-control" style="margin: 0px;"></div></div>')
+
+
+  $('#dataTableSearchSubCategory').on( 'keyup', function () {
+      table2.search(this.value).draw();
+  });
+
+
+  var table3 =  $('#shopDataTableInnerCategory').DataTable({
+      dom: 'Bfrtip',
+      order: [[ 0, "desc" ]],
+      paging: true,
+      pageLength: 20,
+      scrollX: true,
+      responsive: false,
+      fixedHeader: true,
+      orderCellsTop: true,
+      searching: true
+  });
+
+  $("#shopDataTableInnerCategory_filter").html("")
+  $("#shopDataTableInnerCategory_filter").append('<div class="col-sm-4" style="float: right;padding:0px;"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text bg-info" style="color:#fff;"><i class="fa fa-search" aria-hidden="true"></i></span></div><input id="dataTableSearchInnerCategory" type="text" class="form-control" style="margin: 0px;"></div></div>')
+
+
+  $('#dataTableSearchInnerCategory').on( 'keyup', function () {
+      table3.search(this.value).draw();
+  });
+
+
+
+  });
+
+  function loadUpdateform(self){
+    var url = $(self).attr("target_url")
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      success: function (data) {
+        $("#loadUpdateForm").html("");
+        $("#loadUpdateForm").html(data.html_form);
+        $("#myModalUpdate").modal()
+
+      }
+    });
+  }
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Categorys</li>
+    </ol>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-box mr-1"></i>
+        Main Categorys
+        <div style="float: right;">
+          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CategoryModal">
+            Add Category
+          </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="shopDataTableCategory" class="table table-bordered dt-responsive nowrap" style="width:100%; color: #7f7f7f !important;font-size: 14px;">
+                <thead>
+                    <tr class="dtable_header">
+                      <th scope="col">ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Position</th>
+                      <th scope="col">Total Products</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for category in categorys %}
+                  <tr>
+                    <td>{{ category.id }}</td>
+                    <td>{{ category.name }}</td>
+                    <td>{{ category.position }}</td>
+                    <td>{{ category.product_count }}</td>
+                    <td>
+                      <button class="btn btn-info btn-sm" target_url="{% url 'category_update' category.id %}" onclick="loadUpdateform(this);">Edit</button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-box mr-1"></i>
+        Sub Categorys
+        <div style="float: right;">
+          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#SubCategoryModal">
+            Add Sub Category
+          </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="shopDataTableSubCategory" class="table table-bordered dt-responsive nowrap" style="width:100%; color: #7f7f7f !important;font-size: 14px;">
+                <thead>
+                    <tr class="dtable_header">
+                      <th scope="col">ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Category</th>
+                      <th scope="col">Total PRODUCTS</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for subcategory in sub_categorys %}
+                  <tr>
+                    <td>{{ subcategory.id }}</td>
+                    <td>{{ subcategory.name }}</td>
+                    <td>{{ subcategory.category.name }}</td>
+                    <td>{{ subcategory.product_count }}</td>
+                    <td>
+                      <button class="btn btn-info btn-sm" target_url="{% url 'subcategory_update' subcategory.id %}" onclick="loadUpdateform(this);">Edit</button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-box mr-1"></i>
+        Product Categorys
+        <div style="float: right;">
+          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ProductCategoryModal">
+            Add Product Category
+          </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="shopDataTableInnerCategory" class="table table-bordered dt-responsive nowrap" style="width:100%; color: #7f7f7f !important;font-size: 14px;">
+                <thead>
+                    <tr class="dtable_header">
+                      <th scope="col">ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Subcategories</th>
+                      <th scope="col">Total Products</th>
+                      <th scope="col">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for product_category in product_categorys %}
+                  <tr>
+                    <td>{{ product_category.id }}</td>
+                    <td>{{ product_category.name }}</td>
+                    <td>{{ product_category.sub_category.name }}</td>
+                    <td>{{ product_category.product_count }}</td>
+                    <td>
+                      <button class="btn btn-info btn-sm" target_url="{% url 'product_category_update' product_category.id %}" onclick="loadUpdateform(this);">Edit</button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+
+<div class="modal" id="CategoryModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Category</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'category_create' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+  
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Name</label>
+                {% render_field cat_form.name class="form-control" %}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Position</label>
+                {% render_field cat_form.position class="form-control" %}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col form-group">
+                 <div class="custom-control custom-switch">
+                  {% render_field cat_form.show_product_by_subcategory class="custom-control-input" %}
+                  <label class="custom-control-label" for="id_show_product_by_subcategory">Show product by subcategory in home</label>
+                </div>
+
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col form-group">
+               <div class="custom-control custom-switch">
+                {% render_field cat_form.express_shipping class="custom-control-input" %}
+                <label class="custom-control-label" for="id_express_shipping">Only express shipping</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col form-group">
+               <div class="custom-control custom-switch">
+                {% render_field cat_form.hide_category class="custom-control-input" %}
+                <label class="custom-control-label" for="id_hide_category">Hide Category From Home</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col form-group">
+               <div class="custom-control custom-switch">
+                {% render_field cat_form.category_filter class="custom-control-input" %}
+                <label class="custom-control-label" for="id_category_filter">Show Filter</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row" style="float: right;">
+            <div class="col form-group">
+               <button type="Submit" class="btn btn-info">Save</button>
+               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="SubCategoryModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Sub Category</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'subcategory_create' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+  
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Category</label>
+                {% render_field subcat_form.category class="form-control" %}
+            </div>
+            <div class="col form-group">
+              <label>Name</label>
+                {% render_field subcat_form.name class="form-control" %}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col form-group">
+               <div class="custom-control custom-switch">
+                {% render_field subcat_form.hide_sub_category class="custom-control-input" %}
+                <label class="custom-control-label" for="id_hide_sub_category">Hide Product From Home</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row" style="float: right;">
+            <div class="col form-group">
+               <button type="Submit" class="btn btn-info">Save</button>
+               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="ProductCategoryModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Product Category</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'product_category_create' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+  
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Sub Category</label>
+                {% render_field productcat_form.sub_category class="form-control" %}
+            </div>
+            <div class="col form-group">
+              <label>Name</label>
+                {% render_field productcat_form.name class="form-control" %}
+            </div>
+          </div>
+
+
+          <div class="form-row" style="float: right;">
+            <div class="col form-group">
+               <button type="Submit" class="btn btn-info">Save</button>
+               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="loadUpdateForm"></div>
+{% endblock %}

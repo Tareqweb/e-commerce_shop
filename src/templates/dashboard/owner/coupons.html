@@ -1,0 +1,168 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block bodyjs %}
+<script>
+  $(document).ready(function() {
+        var table =  $('#shopDataTable').DataTable({
+            dom: 'Bfrtip',
+            order: [[ 0, "desc" ]],
+            paging: true,
+            pageLength: 20,
+            scrollX: true,
+            responsive: false,
+            fixedHeader: true,
+            orderCellsTop: true,
+            searching: true
+        });
+
+        $("#shopDataTable_filter").html("")
+        $("#shopDataTable_filter").append('<div class="col-sm-4" style="float: right;padding:0px;"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text bg-info" style="color:#fff;"><i class="fa fa-search" aria-hidden="true"></i></span></div><input id="dataTableSearch" type="text" class="form-control" style="margin: 0px;"></div></div>')
+
+
+        $('#dataTableSearch').on( 'keyup', function () {
+            table.search(this.value).draw();
+        });
+
+        $('#id_cupon_for').select2();
+  });
+
+  function loadUpdateform(self){
+    var url = $(self).attr("target_url")
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      success: function (data) {
+        $("#loadUpdateForm").html("");
+        $("#loadUpdateForm").html(data.html_form);
+        $("#myModalUpdate").modal()
+
+      }
+    });
+  }
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / coupons</li>
+    </ol>
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-box mr-1"></i>
+        coupons
+        <div style="float: right;">
+          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+            Add Coupon
+          </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="shopDataTable" class="table table-bordered dt-responsive nowrap" style="width:100%; color: #7f7f7f !important;font-size: 14px;">
+                <thead>
+                    <tr class="dtable_header">
+                      <th scope="col">ID</th>
+                      <th scope="col">Coupon Code</th>
+                      <th scope="col">Coupon Amount</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Created At</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for coupon in coupons %}
+                  <tr>
+                    <td>{{ coupon.id }}</td>
+                    <td>{{ coupon.coupon_code }}</td>
+                    <td>{{ coupon.coupon_amount }} ({{ coupon.coupon_amount_in }})</td>
+                    <!-- <td>{{ coupon.get_cupon_for }}</td> -->
+                    <td>{{ coupon.get_status }}</td>
+                    <td>{{ coupon.created_at|date:"m-d-Y" }}</td>
+                    <td>
+                      <button class="btn btn-info btn-sm" target_url="{% url 'coupons_update' coupon.id %}" onclick="loadUpdateform(this);">Edit</button>
+<!--                       <a href="">
+                        <button class="btn btn-info btn-sm">Delete</button>
+                      </a> -->
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="modal" id="myModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Coupon</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'coupons_create' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+  
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Coupon Code</label>
+                {% render_field form.coupon_code class="form-control" %}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Coupon Amount</label>
+                {% render_field form.coupon_amount class="form-control" %}
+            </div>
+            <div class="col form-group">
+              <label>Coupon Amount In</label>
+                {% render_field form.coupon_amount_in  class="form-control" %}
+            </div>
+          </div>
+
+<!--           <div class="form-row">
+            <div class="col form-group">
+              <label>Applicable Categorys</label>
+                {% render_field form.cupon_for class="form-control" %}
+            </div>
+            <div class="col form-group">
+               <div class="custom-control custom-switch" style="margin-top: 38px;">
+                {% render_field form.all_applicable class="custom-control-input" %}
+                <label class="custom-control-label" for="id_all_applicable">Applicable for All Categorys</label>
+              </div>
+            </div>
+            
+          </div> -->
+
+          <div class="form-row">
+            <div class="col form-group">
+                 <div class="custom-control custom-switch">
+                  {% render_field form.deactivate class="custom-control-input" %}
+                  <label class="custom-control-label" for="id_deactivate">Deactivate Coupon</label>
+                </div>
+
+            </div>
+          </div>
+
+          <div class="form-row" style="float: right;">
+            <div class="col form-group">
+               <button type="Submit" class="btn btn-info">Save</button>
+               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="loadUpdateForm"></div>
+{% endblock %}

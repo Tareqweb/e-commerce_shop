@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css %}
+<style>
+  body{
+    background-color: #f6f9fc !important;
+  }
+
+</style>
+{% endblock %}
+
+{% block bodyjs %}
+<script>
+
+  function openOrderDetails(self){
+    var url = $(self).attr("target_url")
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      success: function (data) {
+        $("#loadOrderDetails").html("");
+        $("#loadOrderDetails").html(data.order_html);
+        $("#order-details-modal").modal()
+      }
+    });
+
+  }
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="page-title-overlap bg-dark pt-4">
+      <div class="container d-lg-flex justify-content-between py-2 py-lg-3">
+        <div class="order-lg-1 pr-lg-4 text-center text-lg-left">
+          <h1 class="h3 text-light mb-0">My Orders</h1>
+        </div>
+      </div>
+    </div>
+    <div class="container pb-5 mb-2 mb-md-4">
+      <div class="row">
+
+        {% include 'myaccount/sidebar.html' %}
+        <section class="col-lg-9">
+          <div class="d-flex justify-content-center justify-content-sm-between align-items-center pt-2 pb-4 pb-sm-5">
+            <div class="d-none d-sm-flex">
+              <!-- <p style="color: #fff;margin: 0px;">Search for: {{ search_q|default:"" }}</p> -->
+            </div>
+            <div class="d-none d-sm-flex">
+              <p style="color: #fff;margin: 0px;">
+              	<a class="btn btn-primary btn-sm" href="{% url 'logout' %}"><i class="czi-sign-out mr-2"></i>Sign out</a>
+              </p>
+            </div>
+          </div>
+          <div class="table-responsive font-size-md">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Date Purchased</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+              	{% for order in orders %}
+                <tr>
+                  <td class="py-3">{{ order.id_no }}</td>
+                  <td class="py-3">{{ order.created_at|date:"m-d-Y" }}</td>
+                  <td class="py-3">
+                    <span class="badge badge-primary m-0">{{ order.orderstatus.status }}</span>
+                  </td>
+                  <td class="py-3">
+                    {% if order.is_valid_promo %}
+                      ${{ order.get_order_total_with_promo|floatformat:2 }} USD
+                    {% else %}
+                      ${{ order.get_order_total|floatformat:2 }} USD
+                    {% endif %}
+                  </td>
+                  <td class="py-3">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openOrderDetails(this)" target_url="{% url 'order_details' order.id %}">View</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+
+        </section>
+
+      </div>
+    </div>
+
+
+<div id="loadOrderDetails"></div>
+
+{% endblock %}

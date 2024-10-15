@@ -1,0 +1,50 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Properties</li>
+    </ol>
+
+	<div class="card mb-4">
+	    <div class="card-header">
+	        <i class="fas fa-box mr-1"></i>
+	        Site
+	    </div>
+	    <div class="card-body">
+			<form action="{% url 'dashboard_properties_logo_create_update' %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+				<div class="form-row">
+					<div class="col-4 form-group">
+						<label>Logo</label>
+					  	{% render_field logo_form.logo class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Site Title</label>
+					  	{% render_field logo_form.title class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<label>Slider Image Height(px)</label>
+					  	{% render_field logo_form.slider_image_height class="form-control" %}
+					</div>
+					<div class="col form-group">
+						<button type="submit" style="margin-top: 31px;" class="btn btn-info">Save</button>
+					</div> 
+				</div>
+				<div class="form-row">
+					<div class="col-3 form-group">
+						<a href="{{ logo_title_obj.logo.url }}" target="_blank">
+							<img src="{{ logo_title_obj.logo.url }}" style="width: 130px;">
+						</a>
+					</div>
+				</div>
+			</form>
+	    </div>
+	</div>
+
+</div>
+
+
+<br><br>
+{% endblock %}

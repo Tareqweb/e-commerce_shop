@@ -1,0 +1,91 @@
+{% load widget_tweaks %}
+
+  <div class="modal fade" id="admin-order-option-modal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width: 70% !important;">
+      <div class="modal-content">
+        <div class="modal-header" style="padding: 10px !important;">
+          <h5 class="modal-title">Order ID - {{ order_product.vendor_order_product.vendor_order.main_order.id_no|upper }}</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body pb-0">
+
+      <aside class="col-sm-12" style="margin-top: 10px;">
+        <div class="card mb-3">
+          <article class="card-body">
+            <header class="mb-4">
+              <div class="row">
+                <div class="col">
+                  <h4 class="card-title">Order Details</h4>
+                  <span>ORDER ID: #{{ order_product.vendor_order_product.vendor_order.main_order.id_no|upper }}</span><br>
+                  <span>PAYMENT ID: #{{ order_product.vendor_order_product.vendor_order.main_order.payment_id|upper }}</span>
+                </div>
+                <div class="col">
+                  <h4 class="card-title">Shipping Address</h4>
+                  <span>{{ order_product.vendor_order_product.vendor_order.main_order.orderdeliveryinfo.address }}</span>
+                </div>
+              </div>
+            </header>
+          </article>
+          <article class="card-body border-top">
+                <div class="media border p-3">
+                  <img src="{{ order_product.vendor_order_product.product.image_sm.url }}" alt="John Doe" class="mr-3 mt-3" style="width:60px;">
+                  <div class="media-body">
+                <div class="row">
+                  <div class="col">
+                      <small style="font-size: 15px;">{{ order_product.vendor_order_product.product.name }}</small><br>
+                      <small>{{ order_product.vendor_order_product.quantity }} x ${{ order_product.vendor_order_product.product_price }} = Total: ${{ order_product.vendor_order_product.get_price }}</small>
+                      <p></p> 
+                  </div>
+                </div>
+
+                  </div>
+                </div>
+          </article>
+        </div>
+      </aside>
+
+
+      <aside class="col-sm-12" style="margin-top: 10px;">
+        <div class="card mb-3">
+          <article class="card-body">
+            <p><b>Reason why I want to cancel this product</b></p>
+            <div>
+              {{ order_product.details|safe|linebreaks }}
+            </div>
+            <div>
+              <img src="{{ order_product.image.url }}">
+            </div>
+            {% if not order_product.is_accepted and not order_product.is_rejected %}
+            <form action="{% url 'cancel_orders_accept' order_product.id %}" method="POST">{% csrf_token %}
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Cancellation Amount</label>
+                    <input type="number" name="cancel_amount" value="0.0" step="0.01" required="" class="form-control"> 
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <a href="{% url 'cancel_orders_regect' order_product.id %}">
+                    <button class="btn btn-info" type="submit" style="float: right;">Reject</button>
+                  </a>
+                  <button class="btn btn-info" type="submit" style="float: right;margin-right: 5px;">Accept cancellation request</button>
+                </div>
+              </div>
+            </form>
+            {% elif order_product.is_accepted %}
+             <div class="form-row">
+              Cancellation Accepted with ${{ order_product.cancel_amount }} 
+             </div>
+            {% elif order_product.is_rejected %}
+             <div class="form-row">
+              Cancellation Rejected
+             </div>
+            {% endif %}
+
+          </article>
+        </div>
+      </aside>
+
+      </div>
+    </div>
+  </div>

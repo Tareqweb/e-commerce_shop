@@ -1,0 +1,53 @@
+{% load widget_tweaks %}
+
+<form action="{% url 'create_order_to_payment' %}" method="POST">{% csrf_token %}
+	<div class="form-row">
+		<div class="col form-group">
+			<label>First name</label>
+			{% render_field form.first_name class="form-control" %}
+		</div>
+		<div class="col form-group">
+			<label>Last name</label>
+		  	{% render_field form.last_name class="form-control" %}
+		</div>
+	</div>
+	<div class="form-row">
+		<div class="col form-group">
+			<label>Email</label>
+		  	{% render_field form.email class="form-control" %}
+		</div> 
+		<div class="col form-group">
+			<label>Phone</label>
+		  	{% render_field form.phone class="form-control" %}
+		</div> 
+	</div>
+	<div class="form-group">
+		<label>Adress</label>
+		{% render_field form.address rows="2" class="form-control" %}
+    </div>
+ 	<div class="form-row">
+		<div class="form-group col-md-6">
+		  <label>City</label>
+		  {% render_field form.city class="form-control" %}
+		</div> 
+		<div class="form-group col-md-6">
+		  <label>State</label>
+		  {% render_field form.state class="form-control custom-select" %}
+		</div> 
+	</div>
+	<div class="form-row">
+		<div class="form-group col-md-6">
+		  <label>Country</label>
+		  {% render_field form.country class="form-control" %}
+		</div> 
+		<div class="form-group col-md-6">
+		  <label>Zip</label>
+		  {% render_field form.zipcode class="form-control" %}
+		</div> 
+	</div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-block">Create Order and Continue To Payment</button>
+    </div>
+                                     
+</form>

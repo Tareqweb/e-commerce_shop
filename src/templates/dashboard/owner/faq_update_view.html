@@ -1,0 +1,59 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block css %}
+<style>
+	.django-ckeditor-widget{
+		width: 100% !important;
+	}
+	#cke_id_description{
+		width: 100% !important;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Page</li>
+    </ol>
+
+	<div class="card mb-4">
+	    <div class="card-header">
+	        <i class="fas fa-box mr-1"></i>
+	        Update FAQ
+	    </div>
+	    <div class="card-body">
+
+	    	<form action="{% url 'update_faq_view' faq.id %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+
+
+				<div class="form-row">
+					<div class="col form-group">
+					  <label>Question</label>
+					    {% render_field form.question class="form-control" %}
+					</div>
+				</div>
+
+				<div class="form-row">
+					<div class="col form-group">
+					  <label>Answer</label>
+					    {% render_field form.answer class="form-control" %}
+					    {{ form.media }}
+					</div>
+				</div>
+
+				
+				<div class="form-row">
+					<div class="col form-group">
+					  <button type="submit" class="btn btn-info" style="float:right;">Save</button>
+					</div>
+				</div>
+	    	</form>
+
+	    </div>
+	</div>
+</div>
+
+{% endblock %}

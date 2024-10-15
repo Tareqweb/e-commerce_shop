@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		{% include 'dashboard/meta.html' %}
+        <title>{{ site_title.title }} Dashboard</title>
+		{% include 'dashboard/css.html' %}
+		{% block css %}{% endblock %}
+		{% block js %}{% endblock %}
+	</head>
+	<body class="sb-nav-fixed">
+		{% include 'dashboard/header.html' %}
+
+        <div id="layoutSidenav">
+			{% include 'dashboard/sidebar.html' %}
+            <div id="layoutSidenav_content">
+                <main>
+                	{% block content %}{% endblock %}
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; 2020</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        {% include 'dashboard/js.html' %}
+		{% block bodyjs %}{% endblock %}
+        
+        {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-success" id="alert_freamwork" style="position: fixed;bottom: 0;z-index: 1100000000;left: 10px;background-color: #EA3223 !important;color: #fff;font-weight: bold;">
+                {{ message }}
+              </div>
+            {% endfor %}
+            <script>
+              $("#alert_freamwork").fadeTo(2000, 500).slideUp(500);
+            </script>
+        {% endif %}
+
+	</body>
+</html>

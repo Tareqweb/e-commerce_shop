@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block css %}
+<style>
+  body{
+    background-color: #f6f9fc !important;
+  }
+
+</style>
+{% endblock %}
+
+
+{% block bodyjs %}
+<script>
+
+var matchHeight = function () {
+  
+  function init() {
+    eventListeners();
+    matchHeight();
+  }
+  
+  function eventListeners(){
+    $(window).on('resize', function() {
+      matchHeight();
+    });
+  }
+  
+  function matchHeight(){
+    var groupName = $('.card');
+    var groupHeights = [];
+    
+    groupName.css('min-height', 'auto');
+    
+    groupName.each(function() {
+      groupHeights.push($(this).outerHeight());
+    });
+    
+    var maxHeight = Math.max.apply(null, groupHeights);
+    groupName.css('min-height', maxHeight);
+  };
+  
+  return {
+    init: init
+  };
+  
+} ();
+
+$(document).ready(function() {
+  matchHeight.init();
+});
+
+
+  </script>
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="page-title-overlap bg-dark pt-3 pb-3">
+  <div class="container pt-2 pb-2" style="text-align: center;">
+    <h1 style="color: #fff;">{{ title }}</h1>
+  </div>
+</div>
+
+
+    <section class="container mb-2 mb-md-4 mt-4">
+      <div class="row">
+
+        <div class="col-xl-3 col-md-6 mb-grid-gutter">
+	        <div class="card">
+		        <div class="card-body text-center"><i class="czi-location h3 mt-2 mb-4 text-primary"></i>
+		          <h3 class="h6 mb-2">Address</h3>
+		          <p class="font-size-sm text-muted">{{ xobject.office_address }}</p>
+		          <br>
+		        </div>
+	    	</div>
+    	</div>
+
+        <div class="col-xl-3 col-md-6 mb-grid-gutter">
+          <div class="card">
+            <div class="card-body text-center"><i class="czi-time h3 mt-2 mb-4 text-primary"></i>
+              <h3 class="h6 mb-2">Working hours</h3>
+              <p class="font-size-sm text-muted">{{ xobject.working_hour|linebreaksbr }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-grid-gutter">
+          <div class="card">
+            <div class="card-body text-center"><i class="czi-phone h3 mt-2 mb-4 text-primary"></i>
+              <h3 class="h6 mb-2">Phone numbers</h3>
+              <p class="font-size-sm text-muted">{{ xobject.office_phone|linebreaksbr }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-grid-gutter">
+          <div class="card">
+            <div class="card-body text-center"><i class="czi-mail h3 mt-2 mb-4 text-primary"></i>
+              <h3 class="h6 mb-2">Email addresses</h3>
+              <p class="font-size-sm text-muted">{{ xobject.office_email|linebreaksbr }}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <div class="container-fluid px-0" id="map">
+      <div class="row no-gutters">
+        <div class="col-lg-6 px-4 px-xl-4 py-4 border-top">
+          <iframe class="iframe-full-height" width="600" height="250" style="position: relative !important;" src="{{ xobject.office_location }}"></iframe>
+        </div>
+        <div class="col-lg-6 px-4 px-xl-5 py-5 border-top">
+          <h2 class="h4 mb-4">Drop us a line</h2>
+          <form class="needs-validation mb-3" method="POST" action="{% url 'send_messages' %}" novalidate>{% csrf_token %}
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="cf-name">Your name:&nbsp;<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" id="cf-name" name="name" placeholder="Full name" required>
+                  <div class="invalid-feedback">Please fill in you name!</div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="cf-email">Email address:&nbsp;<span class="text-danger">*</span></label>
+                  <input class="form-control" type="email" name="email" id="cf-email" placeholder="email@email.com" required>
+                  <div class="invalid-feedback">Please provide valid email address!</div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="cf-phone">Your phone:&nbsp;<span class="text-danger">*</span></label>
+                  <input class="form-control" name="phone" type="text" id="cf-phone" placeholder="+0 (000) 00 000 000" required>
+                  <div class="invalid-feedback">Please provide valid phone number!</div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="cf-subject">Subject:</label>
+                  <input class="form-control" type="text" name="subject" id="cf-subject" placeholder="Provide short title of your request">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="cf-message">Message:&nbsp;<span class="text-danger">*</span></label>
+              <textarea class="form-control" id="cf-message" name="message" rows="6" placeholder="Please describe in detail your request" required></textarea>
+              <div class="invalid-feedback">Please write a message!</div>
+            </div>
+            <button class="btn btn-primary" type="submit">Send message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

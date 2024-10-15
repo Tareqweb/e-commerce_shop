@@ -1,0 +1,58 @@
+<div class="modal fade" id="size-guid-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="min-width: 50%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Size Guide</span>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body tab-content py-4">
+
+        <table class="table table-bordered">
+          <tbody>
+            {% for guid in product.productsizeguide_set.all %}
+            <tr>
+              {% if guid.guide_col1 %}
+              <td>{{ guid.guide_col1 }}</td>
+              {% endif %}
+
+              {% if guid.guide_col2 %}
+              <td>{{ guid.guide_col2 }}</td>
+              {% endif %}
+
+              {% if guid.guide_col3 %}
+              <td>{{ guid.guide_col3 }}</td>
+              {% endif %}
+
+              {% if guid.guide_col4 %}
+              <td>{{ guid.guide_col4 }}</td>
+              {% endif %}
+
+              {% if guid.guide_col5 %}
+              <td>{{ guid.guide_col5 }}</td>
+              {% endif %}
+
+              {% if guid.guide_col6 %}
+              <td>{{ guid.guide_col6 }}</td>
+              {% endif %}
+
+              {% if guid.guide_col7 %}
+              <td>{{ guid.guide_col7 }}</td>
+              {% endif %}
+
+              {% if guid.guide_col8 %}
+              <td>{{ guid.guide_col8 }}</td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        
+        {% if product.productsizemeasurement %}
+        <p><b>How to Measure the Product's Size?</b></p>
+          {{ product.productsizemeasurement.content|safe }}
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>

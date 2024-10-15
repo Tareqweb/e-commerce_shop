@@ -1,0 +1,265 @@
+{% load static %}
+
+<script>
+  
+  function hovercolor(self){
+    var obj = $(self).parent()[0] 
+    var li_obj = $(obj).find('a').first();
+    $(li_obj).addClass('liHover'); 
+  }
+
+  function removeHovercolor(self){
+    var obj = $(self).parent()[0] 
+    var li_obj = $(obj).find('a').first();
+    $(li_obj).removeClass('liHover'); 
+  }
+
+</script>
+
+<style>
+
+
+
+header .nav-link {
+    padding-top: 0.575rem !important;
+    padding-bottom: .575rem !important;
+    color: #fff;
+    
+}
+
+header .nav-link:hover{
+  color: #fe696a !important;
+  background-color: #333a48;
+}
+
+header .nav-item:hover{
+  /*border: 1px solid #fff;*/
+  color: #fe696a !important;
+}
+
+.liHover{
+  color: #fe696a !important;
+  background-color: #333a48;
+}
+
+
+.dropdown-menu{
+  border-radius: 2px !important;
+}
+
+</style>
+
+    <header class="box-shadow-sm">
+      <!-- Topbar-->
+      <div class="topbar topbar-dark bg-dark" style="background-color: #131921 !important;padding: .425rem 0 !important;">
+        <div class="container">
+          <div></div>
+          <div class="topbar-text dropdown d-md-none ml-auto"><a class="topbar-link dropdown-toggle" href="#" data-toggle="dropdown">Tracking / {% if request.user.is_authenticated %}Wishlist / {% endif %}Vendor</a>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a class="dropdown-item" href="{% url 'order_tracking' %}"><i class="czi-location text-muted mr-2"></i>Tracking</a></li>
+              {% if request.user.is_authenticated %}
+              <li><a class="dropdown-item" href="{% url 'product_wish_list' %}"><i class="czi-heart text-muted mr-2"></i>Wishlist</a></li>
+              {% endif %}
+              <li><a class="dropdown-item" href="{% url 'vendor_login' %}"><i class="czi-location text-muted mr-2"></i>Vendor</a></li>
+            </ul>
+          </div>
+          <div class="d-none d-md-block ml-3 text-nowrap">
+
+            <a class="topbar-link d-none d-md-inline-block" href="{% url 'order_tracking' %}"><i class="czi-location mt-n1"></i>Tracking</a>
+
+            {% if request.user.is_authenticated %}
+          	<a class="topbar-link ml-3 border-left border-light pl-3 d-none d-md-inline-block" href="{% url 'product_wish_list' %}"><i class="czi-heart mt-n1"></i>Wishlist</a>
+            {% endif %}
+
+            {% if not request.user.is_authenticated %}
+            <a class="topbar-link ml-3 border-left border-light pl-3 d-none d-md-inline-block" href="{% url 'vendor_login' %}"><i class="czi-user mt-n1"></i>Vendor</a>
+            {% endif %}
+
+
+<!--             {% if not request.user.is_authenticated %}
+            <a class="topbar-link ml-3 border-left border-light pl-3 d-none d-md-inline-block" href="{% url 'admin_login' %}"><i class="czi-user mt-n1"></i>Admin</a>
+            {% endif %} -->
+
+            {% if request.user.is_authenticated and request.user.is_superuser %}
+            <a class="topbar-link ml-3 border-left border-light pl-3 d-none d-md-inline-block" href="{% url 'admin_dashboard_home' %}"><i class="czi-user mt-n1"></i>Admin Dashboard</a>
+            {% endif %}
+
+            {% if request.user.is_authenticated and request.user.vendor %}
+            <a class="topbar-link ml-3 border-left border-light pl-3 d-none d-md-inline-block" href="{% url 'vendor_dashboard_home' %}"><i class="czi-user mt-n1"></i>Vendor Dashboard</a>
+            {% endif %}
+
+
+          </div>
+        </div>
+      </div>
+      <!-- Remove "navbar-sticky" class to make navigation bar scrollable with the page.-->
+      <div class="navbar-sticky bg-light">
+        <div class="navbar navbar-expand-lg navbar-light" style="background-color: #131921 !important;padding: 0px !important;">
+          <div class="container" style="padding-bottom: 0.3rem !important;">
+          	<a class="navbar-brand d-none d-sm-block mr-3 flex-shrink-0" href="/" style="min-width: 7rem;padding: 0px !important;">
+          		<img width="142" src="{{ site_title.logo.url }}" alt="FnFbuy"/>
+          	</a>
+          	<a class="navbar-brand d-sm-none mr-2" href="/" style="min-width: 6rem;margin-left: 10px;">
+              <img width="90" src="{{ site_title.logo.url }}" alt="{{ site_title.title }}"/></a>
+            <!-- Search-->
+            <div class="input-group-overlay d-none d-lg-block mx-4" style="margin-left: 15rem !important;">
+              <div class="input-group-prepend-overlay"><span class="input-group-text"><i class="czi-search"></i></span></div>
+              <form action="{% url 'product_global_filter' %}" method="GET">
+                <input class="form-control prepended-form-control appended-form-control" name="q" value='{{ search_q|default:"" }}' type="text" placeholder="Search for products, vendors and other">
+                <div class="input-group-append-overlay">
+                  <button type="submit" class="btn btn-primary" style="border-radius: 0px 5px 5px 0px;">Search</button>
+                </div>
+              </form>
+            </div>
+            <!-- Toolbar-->
+            <div class="navbar-toolbar d-flex flex-shrink-0 align-items-center">
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"><span class="navbar-toggler-icon"></span></button><a class="navbar-tool navbar-stuck-toggler" href="#"><span class="navbar-tool-tooltip">Expand menu</span>
+
+                <div class="navbar-tool-icon-box"><i class="navbar-tool-icon czi-menu"></i></div></a>
+                {% if request.user.is_authenticated %}
+                <a class="navbar-tool ml-1 ml-lg-0 mr-n1 mr-lg-2" href="{% url 'order_history' %}">
+                <div class="navbar-tool-icon-box" style="color: #fff !important;"><i class="navbar-tool-icon czi-user"></i></div>
+                <div class="navbar-tool-text ml-n3"  style="color: #fff;"><small  style="color: #fff;">Hello, {{ request.user.username }}</small>My Account</div></a>
+                {% else %}
+                <a class="navbar-tool ml-1 ml-lg-0 mr-n1 mr-lg-2" href="#signin-modal" data-toggle="modal">
+                <div class="navbar-tool-icon-box" style="color: #fff !important;"><i class="navbar-tool-icon czi-user"></i></div>
+                <div class="navbar-tool-text ml-n3" style="color: #fff;"><small  style="color: #fff;">Hello, Sign in</small>My Account</div></a>
+                {% endif %}
+
+              
+              <div class="navbar-tool dropdown ml-3">
+                <a class="navbar-tool-icon-box bg-secondary dropdown-toggle" href="{% url 'cart' %}">
+                  <span class="navbar-tool-label">
+                    <span id="cart_item_count">
+                    {{ cart_item }}
+                    </span>
+                </span>
+                  <i class="navbar-tool-icon czi-cart"></i>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-right" style="width: 20rem;">
+                  <div class="widget widget-cart px-3 pt-2 pb-3">
+                    <div style="height: 15rem;" data-simplebar data-simplebar-auto-hide="false">
+                    {% for product in global_cart_obj.cartproduct_set.all %}
+                      <div class="widget-cart-item py-2 border-bottom">
+                        <a href="{% url 'remove_form_cart_by_id' product.product.id %}">
+                        <button class="close text-danger" type="button" aria-label="Remove">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        </a>
+                        <div class="media align-items-center">
+                          <a class="d-block mr-2" href="{% url 'product_details' product.product.slug %}">
+                            <img width="64" src="{% if product.product.image_sm %}{{ product.product.image_sm.url }}{% else %}{{ product.product.image.url }}{% endif %}" alt="Product"/></a>
+                          <div class="media-body">
+                            <h6 class="widget-product-title">
+                              <a href="{% url 'product_details' product.product.slug %}">{{ product.product.name }}</a></h6>
+                            <div class="widget-product-meta">
+                            {% if product.product.is_discount_available %}
+                              <span class="text-accent mr-2">${{ product.product.sell_price }}</span>
+                              <del class="font-size-sm text-muted">${{ product.product.price }}</del>
+                              {% else %}
+                                <span class="text-accent mr-2">${{ product.product.price }}</span>
+                            {% endif %}
+                              <span class="text-muted">x {{ product.quantity }}</span></div>
+                          </div>
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </div>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center py-3">
+                      <div class="font-size-sm mr-2 py-2" >
+                        <span class="text-muted">Subtotal:</span>
+                        <span class="text-accent font-size-base ml-1">$
+                {% if global_cart_obj %}{{ global_cart_obj.cart_subtotal_amount|floatformat:2 }}{% else %}0.00{% endif %}</span>
+                      </div>
+                    </div>
+                    {% if global_cart_obj.cart_subtotal_amount > 0 %}
+                    <a class="btn btn-primary btn-sm btn-block" href="{% url 'delivery_info' %}">
+                      <i class="czi-card mr-2 font-size-base align-middle"></i>Checkout</a>
+                    {% endif %}
+                    <a class="btn btn-primary btn-sm btn-block" href="{% url 'cart' %}">
+                      <i class="czi-card mr-2 font-size-base align-middle"></i>View Cart</a>
+                    
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="navbar navbar-expand-lg navbar-light navbar-stuck-menu pt-0 pb-0" style="background-color: #232f3e !important;">
+          <div class="container">
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+              <!-- Search-->
+              <div class="input-group-overlay d-lg-none my-3">
+                <div class="input-group-prepend-overlay"><span class="input-group-text"><i class="czi-search"></i></span></div>
+                <input class="form-control prepended-form-control" type="text" placeholder="Search for products">
+              </div>
+              <!-- Departments menu-->
+              <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle pl-0" href="#" data-toggle="dropdown" style="color: #fff;"><i class="czi-menu align-middle mt-n1 mr-2"></i>All Category</a>
+                  <ul class="dropdown-menu">
+                  	{% for category in categories %}
+                    <li class="dropdown mega-dropdown">
+                      <a class="dropdown-item dropdown-toggle" href="{% url 'category_details' category.slug %}" >
+                        {{ category.name }}</a>
+                      <div class="dropdown-menu p-3" style="left: 102%;">
+                        <div class="row px-2" style="width: 73em; max-height: calc(100vh - 200px);overflow-y: scroll;display: block;">
+                          {% for subcategory in category.subcategory_set.all %}
+                          <div class="mega-dropdown-column py-4 px-3" style="float: left;padding-bottom: 0.5rem !important;padding-top: 0.5rem !important;width: 14rem !important;">
+                            <div class="widget widget-links">
+                              <h6 class="font-size-base mb-1">
+                                <a href="{% url 'sub_category_details' subcategory.slug %}" style="font-size:13px;">{{ subcategory.name }}</a>
+                              </h6>
+                              <ul class="widget-list">
+                                {% for productcategory in subcategory.productcategory_set.all %}
+                                <li class="widget-list-item pb-0" style="margin-bottom:0px;"><a class="widget-list-link" href="{% url 'product_category_details' productcategory.slug %}">{{ productcategory.name }}</a></li>
+                                {% endfor %}
+                              </ul>
+                            </div>
+                          </div>
+                          {% endfor %}
+                        </div>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </li>
+              </ul>
+              <!-- Primary menu-->
+              <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="/" style="color:#fff;">Home</a>
+              </li>
+                {% for category in categories %}
+                <li class="nav-item dropdown" style="position: inherit;"><a class="nav-link dropdown-toggle" href="{% url 'category_details' category.slug %}" style="color:#fff;">{{ category.name }}</a>
+                  <div class="dropdown-menu p-3" style="left: 13.5%;width: 73rem;" onmouseover="hovercolor(this)" onmouseout="removeHovercolor(this);">
+                    <div class="row px-2" style="max-height: calc(100vh - 200px);overflow-y: scroll;display: block;">
+                      {% for subcategory in category.subcategory_set.all %}
+                      <div class="mega-dropdown-column py-4 px-3" style="float: left;padding-bottom: 0.5rem !important;padding-top: 0.5rem !important;width: 14rem !important;">
+                        <div class="widget widget-links">
+                          <h6 class="font-size-base mb-1"><a href="{% url 'sub_category_details' subcategory.slug %}" style="font-size: 13px;">{{ subcategory.name }}</a></h6>
+                          <ul class="widget-list">
+                            {% for productcategory in subcategory.productcategory_set.all %}
+                            <li class="widget-list-item pb-0" style="margin-bottom: 0px;">
+                              <a class="widget-list-link" href="{% url 'product_category_details' productcategory.slug %}" style="font-size: 13px;">{{ productcategory.name }}</a>
+                            </li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </li>
+                {% endfor %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'daily_deals' %}" style="color:#fff;">Daily Deals</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>

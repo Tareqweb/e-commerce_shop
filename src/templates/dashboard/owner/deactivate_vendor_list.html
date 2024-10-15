@@ -1,0 +1,98 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block bodyjs %}
+<script>
+	$(document).ready(function() {
+        var table_url = "{% url 'vendor_list_dt' %}?active=False"
+        var table =  $('#shopDataTable').DataTable({
+            dom: 'Bfrtip',
+            order: [[ 0, "desc" ]],
+            paging: true,
+            pageLength: 20,
+            scrollX: true,
+            responsive: false,
+            fixedHeader: true,
+            orderCellsTop: true,
+            searching: true,
+            processing: true,
+            serverSide: true,
+            ajax: {
+                "url": table_url,
+                "type": "POST",
+                "headers": {'X-CSRFToken': '{{ csrf_token }}'}
+            }
+        });
+
+        $("#shopDataTable_filter").html("")
+        $("#shopDataTable_filter").append('<div class="col-sm-4" style="float: right;padding:0px;"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text bg-info" style="color:#fff;"><i class="fa fa-search" aria-hidden="true"></i></span></div><input id="dataTableSearch" type="text" class="form-control" style="margin: 0px;"></div></div>')
+
+
+        $('#dataTableSearch').on( 'keyup', function () {
+            table.search(this.value).draw();
+        });
+
+
+
+
+	});
+
+    function vendorDetails(self){
+        var url = $(self).attr("data_url")
+        $.ajax({
+          url: url,
+          type: 'get',
+          dataType: 'json',
+          success: function (data) {
+            $("#vendorDetailsId").html("");
+            $("#vendorDetailsId").html(data.vendor_details);
+            $("#vendor-details-modal").modal()
+
+          }
+        });
+    }
+
+
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Deactivate Vendors</li>
+    </ol>
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-box mr-1"></i>
+        Deactivate Vendor List
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="shopDataTable" class="table table-bordered dt-responsive nowrap" style="width:100%; color: #7f7f7f !important;font-size: 14px;">
+                <thead>
+                    <tr class="dtable_header">
+                      <th scope="col">ID</th>
+                      <th scope="col">Company Name</th>
+                      <th scope="col">Full Name</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Phone</th>
+                      <th scope="col">Mobile</th>
+                      <th scope="col">Address</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<br><br>
+
+<div id="vendorDetailsId"></div>
+{% endblock %}

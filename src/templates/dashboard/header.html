@@ -1,0 +1,25 @@
+{% load static %}
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% if request.user.vendor %}/dashboard/vendor/{% else %}/dashboard/admin/{% endif %}">DASHBOARD</a>
+    <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+    <!-- Navbar Search-->
+    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+    </form>
+    <!-- Navbar-->
+    <ul class="navbar-nav ml-auto ml-md-0">
+        {% if request.user.is_superuser and request.user.vendor %}
+        <a href="{% url 'vendor_dashboard_home' %}">
+            <button class="btn btn-info btn-sm">Vendor Dashboard</button>
+        </a>
+        <a href="{% url 'admin_dashboard_home' %}">
+            <button class="btn btn-info btn-sm" style="margin-left: 5px;">Admin Dashboard</button>
+        </a>
+        {% endif %}
+        <a href="/" target="_blank">
+            <button class="btn btn-info btn-sm" style="margin-left: 5px;">View Site</button>
+        </a>
+        <a href="{% url 'logout' %}">
+            <button class="btn btn-info btn-sm" style="margin-left: 5px;">Logout</button>
+        </a>
+    </ul>
+</nav>

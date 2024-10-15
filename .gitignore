@@ -1,0 +1,33 @@
+*.pyc
+__pycache__/
+bin/
+include/
+lib/
+share/
+local/
+pip-selfcheck.json
+cache/
+cdn/
+
+.env
+*/*.sqlite3
+.DS_Store
+
+
+.vscode/
+*.mo
+
+*.orig
+*.pyc
+*.cfg
+
+### eclispe ###
+.settings
+.project
+.pydevproject
+
+*.pem
+
+
+### virtualenv ###
+virt_env

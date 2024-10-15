@@ -1,0 +1,149 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block bodyjs %}
+<script>
+  $(document).ready(function() {
+        var table =  $('#shopDataTable').DataTable({
+            dom: 'Bfrtip',
+            order: [[ 0, "desc" ]],
+            paging: true,
+            pageLength: 20,
+            scrollX: true,
+            responsive: false,
+            fixedHeader: true,
+            orderCellsTop: true,
+            searching: true
+        });
+
+        $("#shopDataTable_filter").html("")
+        $("#shopDataTable_filter").append('<div class="col-sm-4" style="float: right;padding:0px;"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text bg-info" style="color:#fff;"><i class="fa fa-search" aria-hidden="true"></i></span></div><input id="dataTableSearch" type="text" class="form-control" style="margin: 0px;"></div></div>')
+
+
+        $('#dataTableSearch').on( 'keyup', function () {
+            table.search(this.value).draw();
+        });
+
+
+  });
+
+  function loadUpdateform(self){
+    var url = $(self).attr("target_url")
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      success: function (data) {
+        $("#loadUpdateForm").html("");
+        $("#loadUpdateForm").html(data.html_form);
+        $("#myModalUpdate").modal()
+
+      }
+    });
+  }
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Sliders</li>
+    </ol>
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-box mr-1"></i>
+        Sliders
+        <div style="float: right;">
+          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+            Add Slider
+          </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="shopDataTable" class="table table-bordered dt-responsive nowrap" style="width:100%; color: #7f7f7f !important;font-size: 14px;">
+                <thead>
+                    <tr class="dtable_header">
+                      <th scope="col">ID</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Button Name</th>
+                      <th scope="col">Button Url</th>
+                      <th scope="col">Image</th>
+                      <th scope="col">Show Button</th>
+                      <th scope="col">Show Slider</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for slider in sliders %}
+                  <tr>
+                    <td>{{ slider.id }}</td>
+                    <td>{{ slider.title }}</td>
+                    <td>{{ slider.description }}</td>
+                    <td>{{ slider.button_name }}</td>
+                    <td><a target="_blank" href="{{ slider.button_link }}">URL Link</a></td>
+                    <td>
+                      <a href="{{ slider.image.url }}" target="_blank">
+                        <img src="{{ slider.image.url }}" style="width: 17px;">
+                      </a>
+                    </td>
+                    <td>{% if slider.show_button %}Yes{% else %}No{% endif %}</td>
+                    <td>{% if slider.show_slider %}Yes{% else %}No{% endif %}</td>
+                    <td>
+                      <button class="btn btn-info btn-sm" target_url="{% url 'dashboard_slider_update' slider.id %}" onclick="loadUpdateform(this);">Edit</button>
+                      <a href="{% url 'dashboard_slider_delete' slider.id %}">
+                        <button class="btn btn-info btn-sm">Delete</button>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="modal" id="myModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Slider</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'dashboard_slider_create' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Image</label>
+                {% render_field form.image class="form-control" %}
+                <a href="{{ slider.image.url }}" target="_blank">
+                  <img src="{{ slider.image.url }}" style="width: 60px;margin-top: 10px;">
+                </a>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col form-group">
+              <label>Button Url</label>
+                {% render_field form.link class="form-control" %}
+            </div>
+          </div>
+          <div class="form-row" style="float: right;">
+            <div class="col form-group">
+               <button type="Submit" class="btn btn-info">Save</button>
+               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="loadUpdateForm"></div>
+{% endblock %}

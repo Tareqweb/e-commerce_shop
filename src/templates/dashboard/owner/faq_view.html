@@ -1,0 +1,112 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block js %}
+<script>
+	function loadFAQEdit(self){
+	    var url = $(self).attr("target_url")
+	    $.ajax({
+	      url: url,
+	      type: 'get',
+	      dataType: 'json',
+	      success: function (data) {
+	        $("#loadUpdateForm").html("");
+	        $("#loadUpdateForm").html(data.update_html);
+	        $("#faqupdateModal").modal()
+
+	      }
+	    });
+	}
+</script>
+{% endblock %}
+
+{% block css %}
+<style>
+	.django-ckeditor-widget{
+		width: 100% !important;
+	}
+	#cke_id_description{
+		width: 100% !important;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Page</li>
+    </ol>
+
+	<div class="card mb-4">
+	    <div class="card-header">
+	        <i class="fas fa-box mr-1"></i>
+	        FAQ
+	        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#faqModal" style="float: right;">ADD FAQ</button>
+	    </div>
+	    <div class="card-body">
+			<div class="table-responsive">
+			<table class="table table-hover">
+			  <thead>
+			    <tr>
+			      <th scope="col">QUESTION</th>
+			      <th scope="col">Action</th>
+			    </tr>
+			  </thead>
+				<tbody>
+					{% for faq in faqs %}
+					<tr>
+						<td>{{ faq.question }}</td>
+						<td>
+							<a href="{% url 'load_faq_view' faq.id %}">
+							<button type="button" class="btn btn-info btn-sm">Edit</button>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			</div>
+	    </div>
+	</div>
+</div>
+
+<div class="modal fade" id="faqModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+    	<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Create FAQ</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+
+	      <div class="modal-body">
+			<div class="form-row">
+				<div class="col form-group">
+				  <label>Question</label>
+				    {% render_field form.question class="form-control" %}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="col form-group">
+				  <label>Answer</label>
+				    {% render_field form.answer class="form-control" %}
+				    {{ form.media }}
+				</div>
+			</div>
+	      </div>
+
+	      <div class="modal-footer">
+	      	<button type="submit" class="btn btn-info">Save</button>
+	        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+	      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="loadUpdateForm"></div>
+<br><br>
+{% endblock %}

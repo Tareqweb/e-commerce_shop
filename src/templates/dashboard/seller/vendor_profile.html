@@ -1,0 +1,98 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block css %}
+<style>
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Settings</li>
+    </ol>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-box-open mr-1"></i>
+        Update Profile
+    </div>
+    <div class="card-body">
+		<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+
+            <div class="form-row">
+              <div class="col-12 form-group">
+                <label for="reg-fn">Owner/Contact Person Full Name</label>
+                {% render_field form.full_name class="form-control" required="" %}
+                <div class="invalid-feedback">Please enter valid Owner/Contact Person Full Name</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-12 form-group">
+                <label for="reg-fn">Store/Company Name</label>
+                {% render_field form.company_name class="form-control" required="" %}
+                <div class="invalid-feedback">Please enter valid Store/Company Name</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-12 form-group">
+                <label for="reg-fn">Store/Company Website/Social Link (if any)</label>
+                {% render_field form.company_name class="form-control" required="" %}
+                <div class="invalid-feedback">Please enter valid Store/Company Website/Social Link (if any)</div>
+              </div>
+            </div>
+			<div class="form-row">
+				<div class="col-6 form-group">
+					<label for="reg-fn">Phone No.</label>
+					{% render_field form.phone class="form-control" required="" %}
+					<div class="invalid-feedback">Please enter valid Phone No.</div>
+				</div>
+				<div class="col-6 form-group">
+					<label for="reg-email">Mobile No.</label>
+					{% render_field form.mobile class="form-control" required="" %}
+					<div class="invalid-feedback">Please enter valid Mobile No.</div>
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="col form-group">
+					<label>Address</label>
+				  	{% render_field form.address rows="2" class="form-control" %}
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="col form-group">
+					<label>City</label>
+				  	{% render_field form.city class="form-control" %}
+				</div>
+				<div class="col form-group">
+					<label>State</label>
+				  	{% render_field form.state class="form-control" %}
+				</div>
+				<div class="col form-group">
+					<label>Zipcode</label>
+				  	{% render_field form.zipcode class="form-control" %}
+				</div>
+				<div class="col form-group">
+					<label>Country</label>
+				  	{% render_field form.country class="form-control" %}
+				</div>
+			</div>
+
+			<div class="form-group mt-3">
+				<button type="submit" class="btn btn-info" style="float: right;">Save</button>
+			</div>                       
+		</form>
+    </div>
+</div>
+
+</div>
+
+<br><br>
+{% endblock %}

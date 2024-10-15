@@ -1,0 +1,89 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block bodyjs %}
+<script>
+  function makePayment(self){
+    var url = $(self).attr("target_url")
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      success: function (data) {
+        $("#loadUpdateForm").html("");
+        $("#loadUpdateForm").html(data.html_form);
+        $("#admin-order-option-modal").modal()
+
+      }
+    });
+  }
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+    <!-- <h1 class="mt-4">Dashboard</h1> -->
+    <ol class="breadcrumb mb-4 mt-2">
+        <li class="breadcrumb-item active">Dashboard / Payment</li>
+    </ol>
+    <div class="row">
+        <div class="col-xl-6 col-md-6">
+            <div class="card text-white mb-4" style="background-color: #343a40 !important">
+                <div class="card-body">
+                <p>Total Paid Amount</p>
+                <h2>${{ paid_total_amount|floatformat:2 }}</h2>
+            	</div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-6">
+            <div class="card text-white mb-4" style="background-color: #343a40 !important">
+                <div class="card-body">
+                <p>Total Paid Order</p>
+                <h2>{{ paid_payment_rquests.count }}</h2>
+            	</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table mr-1"></i>
+            Paid Payment Requests
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="dtable_header">
+                            <th>Paid Orders ID</th>
+                            <th>Paid Amount</th>
+                            <th>Payment At</th>
+                            <th>Payment Method</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paid_payment in paid_payment_rquests %}
+                        <tr>
+                            <td>{{ paid_payment.orders_id }}</td>
+                            <td>${{ paid_payment.pay_amount|floatformat:2 }}</td>
+                            <td>{{ paid_payment.updated_at|date:"Y-m-d" }}</td>
+                            <td>{{ paid_payment.pay_by }}</td>
+                            <td>Paid</td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm" target_url="{% url 'load_payment_request' paid_payment.id %}" onclick="makePayment(this)">Details</button>
+                            </td>
+                            
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<div id="loadUpdateForm"></div>
+{% endblock %}
